@@ -2,6 +2,7 @@
  * Ticket System Command - Support Server Manager
  * Comprehensive ticket system with full configuration via commands
  * No hardcoded data - everything is configurable
+ * Users can only create tickets from the panel (buttons), not via commands
  */
 
 import { 
@@ -27,14 +28,20 @@ export default {
         const subcommand = args[0]?.toLowerCase();
         const isOwner = client.owners.includes(message.author.id);
         const isAdmin = message.member?.permissions.has(PermissionFlagsBits.Administrator);
+        const config = await client.db.ticketConfig.get(message.guild.id) || {};
+        const isSupportRole = config.supportRoleId && message.member?.roles.cache.has(config.supportRoleId);
 
-        // User commands (available to everyone)
-        const userCommands = ['new', 'close', 'transcript'];
-        // Admin commands (requires admin/owner)
-        const adminCommands = ['setup', 'panel', 'config', 'category', 'add', 'remove', 'rename', 'delete', 'list', 'logs', 'reset'];
+        // Commands available to ticket participants (inside their own ticket)
+        const ticketParticipantCommands = ['close', 'transcript'];
+        // Commands for support staff (support role + admins)
+        const supportCommands = ['add', 'remove', 'rename', 'list'];
+        // Admin only commands
+        const adminCommands = ['setup', 'panel', 'config', 'category', 'delete', 'logs', 'reset'];
 
-        if (!subcommand || ![...userCommands, ...adminCommands].includes(subcommand)) {
-            return showHelp(client, message, isOwner || isAdmin);
+        const allCommands = [...ticketParticipantCommands, ...supportCommands, ...adminCommands];
+
+        if (!subcommand || !allCommands.includes(subcommand)) {
+            return showHelp(client, message, isOwner || isAdmin, isSupportRole);
         }
 
         // Check permissions for admin commands
@@ -47,17 +54,61 @@ export default {
             });
         }
 
+        // Check permissions for support commands
+        if (supportCommands.includes(subcommand) && !isOwner && !isAdmin && !isSupportRole) {
+            return message.reply({
+                embeds: [
+                    client.embed(client.colors.error)
+                        .setDescription('❌ You need to be a support staff member to use this command!')
+                ]
+            });
+        }
+
+        // For ticket participant commands, check if user is in a ticket
+        if (ticketParticipantCommands.includes(subcommand)) {
+            const ticketData = await client.db.tickets.get(message.channel.id);
+            if (!ticketData) {
+                return message.reply({
+                    embeds: [
+                        client.embed(client.colors.error)
+                            .setDescription('❌ This command can only be used inside a ticket channel!')
+                    ]
+                });
+            }
+            // Check if user is a participant, support staff, or admin
+            const isParticipant = ticketData.participants?.includes(message.author.id) || ticketData.userId === message.author.id;
+            if (!isParticipant && !isOwner && !isAdmin && !isSupportRole) {
+                return message.reply({
+                    embeds: [
+                        client.embed(client.colors.error)
+                            .setDescription('❌ You are not a participant of this ticket!')
+                    ]
+                });
+            }
+        }
+
         try {
             switch (subcommand) {
-                // User commands
-                case 'new':
-                    await createTicket(client, message, args.slice(1));
-                    break;
+                // Ticket participant commands
                 case 'close':
                     await closeTicket(client, message, args.slice(1));
                     break;
                 case 'transcript':
                     await createTranscript(client, message);
+                    break;
+
+                // Support staff commands
+                case 'add':
+                    await addUserToTicket(client, message, args.slice(1));
+                    break;
+                case 'remove':
+                    await removeUserFromTicket(client, message, args.slice(1));
+                    break;
+                case 'rename':
+                    await renameTicket(client, message, args.slice(1));
+                    break;
+                case 'list':
+                    await listTickets(client, message, args.slice(1));
                     break;
 
                 // Admin commands
@@ -73,20 +124,8 @@ export default {
                 case 'category':
                     await manageCategories(client, message, args.slice(1));
                     break;
-                case 'add':
-                    await addUserToTicket(client, message, args.slice(1));
-                    break;
-                case 'remove':
-                    await removeUserFromTicket(client, message, args.slice(1));
-                    break;
-                case 'rename':
-                    await renameTicket(client, message, args.slice(1));
-                    break;
                 case 'delete':
                     await deleteTicket(client, message);
-                    break;
-                case 'list':
-                    await listTickets(client, message, args.slice(1));
                     break;
                 case 'logs':
                     await setLogChannel(client, message, args.slice(1));
@@ -108,7 +147,7 @@ export default {
 };
 
 // ==================== HELP COMMAND ====================
-async function showHelp(client, message, isAdmin) {
+async function showHelp(client, message, isAdmin, isSupportRole) {
     const embed = client.embed(client.colors.info)
         .setAuthor({
             name: '🎫 Ticket System',
@@ -116,11 +155,24 @@ async function showHelp(client, message, isAdmin) {
         })
         .setDescription(
             `A comprehensive ticket system for managing support requests.\n\n` +
-            `**User Commands:**\n` +
-            `\`${client.prefix}ticket new [category] [reason]\` - Create a new ticket\n` +
+            `**📝 How to Create a Ticket:**\n` +
+            `Use the **Create Ticket** button on the ticket panel!\n` +
+            `*(Tickets can only be created from the panel)*\n\n` +
+            `**Inside a Ticket:**\n` +
             `\`${client.prefix}ticket close [reason]\` - Close current ticket\n` +
             `\`${client.prefix}ticket transcript\` - Generate ticket transcript\n`
         );
+
+    if (isSupportRole || isAdmin) {
+        embed.addFields({
+            name: '👥 Support Staff Commands',
+            value: 
+                `\`${client.prefix}ticket add <user>\` - Add user to ticket\n` +
+                `\`${client.prefix}ticket remove <user>\` - Remove user from ticket\n` +
+                `\`${client.prefix}ticket rename <name>\` - Rename current ticket\n` +
+                `\`${client.prefix}ticket list [open/closed/all]\` - List tickets`
+        });
+    }
 
     if (isAdmin) {
         embed.addFields({
@@ -130,27 +182,16 @@ async function showHelp(client, message, isAdmin) {
                 `\`${client.prefix}ticket panel [channel]\` - Send ticket panel\n` +
                 `\`${client.prefix}ticket config\` - View current configuration\n` +
                 `\`${client.prefix}ticket category <add/remove/list> [name]\` - Manage categories\n` +
-                `\`${client.prefix}ticket add <user>\` - Add user to ticket\n` +
-                `\`${client.prefix}ticket remove <user>\` - Remove user from ticket\n` +
-                `\`${client.prefix}ticket rename <name>\` - Rename current ticket\n` +
                 `\`${client.prefix}ticket delete\` - Delete current ticket\n` +
-                `\`${client.prefix}ticket list [user/open/closed/all]\` - List tickets\n` +
                 `\`${client.prefix}ticket logs <channel>\` - Set log channel\n` +
                 `\`${client.prefix}ticket reset\` - Reset all ticket configuration`
         });
     }
 
-    embed.setFooter({ text: 'NeroX Support Manager' }).setTimestamp();
+    embed.setFooter({ text: 'NeroX Support Manager • Create tickets from the panel!' }).setTimestamp();
 
-    const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-            .setCustomId('ticket_quick_create')
-            .setLabel('Create Ticket')
-            .setStyle(ButtonStyle.Primary)
-            .setEmoji('🎫')
-    );
-
-    await message.reply({ embeds: [embed], components: [row] });
+    // Don't show button in help - users should use the panel
+    await message.reply({ embeds: [embed] });
 }
 
 // ==================== SETUP WIZARD ====================

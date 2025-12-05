@@ -11,22 +11,72 @@ import { resolveBotAdmin } from '../../functions/context/resolveBotAdmin.js';
 
 const event = 'ctxCreate';
 
+// Helper function to check if noPrefix is active (with expiry support)
+function isNoPrefixActive(noPrefixData) {
+    if (!noPrefixData) return false;
+    
+    // Legacy format (just true) - treat as permanent
+    if (noPrefixData === true) return true;
+    
+    // New format with object
+    if (typeof noPrefixData === 'object') {
+        // Permanent noprefix
+        if (noPrefixData.permanent) return true;
+        
+        // Check expiry
+        if (noPrefixData.expiresAt) {
+            return noPrefixData.expiresAt > Date.now();
+        }
+        
+        // If no expiresAt and not permanent, treat as active (backwards compatibility)
+        return true;
+    }
+    
+    return false;
+}
+
+// Helper function to check if premium is active (with expiry support)
+function isPremiumActive(premiumData) {
+    if (!premiumData) return false;
+    
+    // Check if it's an object with expiry
+    if (typeof premiumData === 'object') {
+        // Permanent premium
+        if (premiumData.permanent) return true;
+        
+        // Check expiry - if expiresAt is null, treat as permanent
+        if (premiumData.expiresAt === null) return true;
+        
+        // Check if not expired
+        if (premiumData.expiresAt) {
+            return premiumData.expiresAt > Date.now();
+        }
+        
+        // If has redeemedAt but no expiresAt, treat as active (backwards compatibility)
+        if (premiumData.redeemedAt) return true;
+    }
+    
+    // Legacy format or simple truthy value
+    return !!premiumData;
+}
+
 export default class ContextCreate {
     constructor() {
         this.name = event;
         this.execute = async (client, ctx) => {
             if (!ctx) return;
 
-            const [owner, admin, noPrefix, bl, staff] = await Promise.all([
+            const [owner, admin, noPrefixData, bl, premiumData] = await Promise.all([
                 client.owners.includes(ctx.author.id),
                 client.admins.includes(ctx.author.id),
                 client.db.noPrefix.get(ctx.author.id),
                 client.db.blacklist.get(ctx.author.id),
-                client.db.botstaff.has(ctx.author.id), // Premium Users
+                client.db.botstaff.get(ctx.author.id), // Premium Users - get full data for expiry check
             ]);
 
             const botAdmin = owner || admin ? true : false;
-            const np = botAdmin || noPrefix ? true : false;
+            const np = botAdmin || isNoPrefixActive(noPrefixData) ? true : false;
+            const staff = isPremiumActive(premiumData);
 
             if (bl) return;
             if (!(await resolvePerms.basic(ctx))) return;
