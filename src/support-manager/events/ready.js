@@ -4,7 +4,7 @@
  */
 
 import axios from 'axios';
-import { endGiveaway } from '../commands/giveaway.js';
+import { endGiveaway } from '../utils/giveawayUtils.js';
 
 // Lavalink configs
 const LAVALINK_HOST = process.env.LAVALINK_HOST || '98.83.6.213';
