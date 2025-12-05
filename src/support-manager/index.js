@@ -52,6 +52,8 @@ class SupportManager extends Client {
             blacklist: josh('blacklist'),
             giveaways: josh('support/giveaways'),
             tickets: josh('support/tickets'),
+            ticketConfig: josh('support/ticketConfig'),
+            ticketTranscripts: josh('support/ticketTranscripts'),
             warnings: josh('support/warnings'),
             logs: josh('support/logs'),
         };
