@@ -12,6 +12,7 @@ import { resolveBotAdmin } from '../../functions/context/resolveBotAdmin.js';
 const event = 'ctxCreate';
 
 // Helper function to check if noPrefix is active (with expiry support)
+// Same pattern as premium - expired entries are cleaned up at startup
 function isNoPrefixActive(noPrefixData) {
     if (!noPrefixData) return false;
     
@@ -23,12 +24,13 @@ function isNoPrefixActive(noPrefixData) {
         // Permanent noprefix
         if (noPrefixData.permanent) return true;
         
-        // Check expiry
-        if (noPrefixData.expiresAt) {
-            return noPrefixData.expiresAt > Date.now();
+        // Check expiry (same as premium)
+        const expiryTime = noPrefixData.expiresAt || noPrefixData.expires;
+        if (expiryTime && expiryTime < Date.now()) {
+            return false; // Expired
         }
         
-        // If no expiresAt and not permanent, treat as active (backwards compatibility)
+        // Has expiry in future or no expiry set = active
         return true;
     }
     
@@ -36,6 +38,7 @@ function isNoPrefixActive(noPrefixData) {
 }
 
 // Helper function to check if premium is active (with expiry support)
+// Expired entries are cleaned up at startup in readyEvent.js
 function isPremiumActive(premiumData) {
     if (!premiumData) return false;
     
@@ -44,16 +47,14 @@ function isPremiumActive(premiumData) {
         // Permanent premium
         if (premiumData.permanent) return true;
         
-        // Check expiry - if expiresAt is null, treat as permanent
-        if (premiumData.expiresAt === null) return true;
-        
-        // Check if not expired
-        if (premiumData.expiresAt) {
-            return premiumData.expiresAt > Date.now();
+        // Check expiry (same pattern as checkPremiumExpiries)
+        const expiryTime = premiumData.expiresAt || premiumData.expires;
+        if (expiryTime && expiryTime < Date.now()) {
+            return false; // Expired
         }
         
-        // If has redeemedAt but no expiresAt, treat as active (backwards compatibility)
-        if (premiumData.redeemedAt) return true;
+        // Has expiry in future or no expiry set = active
+        return true;
     }
     
     // Legacy format or simple truthy value

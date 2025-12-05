@@ -28,6 +28,8 @@ const checkPremiumExpiries = async (client) => {
     const userKeys = await client.db.botstaff.keys;
     for (const id of userKeys) {
         const data = await client.db.botstaff.get(id);
+        // Skip if permanent
+        if (data?.permanent) continue;
         const expiryTime = data?.expiresAt || data?.expires;
         if (expiryTime && expiryTime < now) {
             await client.db.botstaff.delete(id).catch(() => {});
@@ -61,6 +63,8 @@ const checkPremiumExpiries = async (client) => {
     const serverKeys = await client.db.serverstaff.keys;
     for (const id of serverKeys) {
         const data = await client.db.serverstaff.get(id);
+        // Skip if permanent
+        if (data?.permanent) continue;
         const expiryTime = data?.expiresAt || data?.expires;
         if (expiryTime && expiryTime < now) {
             await client.db.serverstaff.delete(id).catch(() => {});
@@ -71,6 +75,54 @@ const checkPremiumExpiries = async (client) => {
 
     if (expiredUsers) client.log(`Removed ${expiredUsers} expired user premiums.`, 'info');
     if (expiredServers) client.log(`Removed ${expiredServers} expired server premiums.`, 'info');
+};
+
+const checkNoPrefixExpiries = async (client) => {
+    const now = Date.now();
+    let expiredUsers = 0;
+
+    // NoPrefix Expiry
+    const noPrefixKeys = await client.db.noPrefix.keys;
+    for (const id of noPrefixKeys) {
+        const data = await client.db.noPrefix.get(id);
+        
+        // Skip legacy format (just true) - treat as permanent
+        if (data === true) continue;
+        
+        // Skip if permanent
+        if (data?.permanent) continue;
+        
+        // Check expiry
+        const expiryTime = data?.expiresAt || data?.expires;
+        if (expiryTime && expiryTime < now) {
+            await client.db.noPrefix.delete(id).catch(() => {});
+            expiredUsers++;
+
+            const user = await client.users.fetch(id).catch(() => null);
+            if (user) {
+                user.send({
+                    embeds: [
+                        client.embed('#FF6B6B')
+                            .title('No Prefix Expired')
+                            .desc(`Your **No Prefix** access has expired.\n\nYou will now need to use the prefix \`${client.prefix}\` before commands.\n\nTo renew, join our [Support Server](${SUPPORT_SERVER})`)
+                            .footer({ text: 'Nerox No Prefix | Expired' })
+                    ],
+                    components: [
+                        {
+                            type: 1,
+                            components: [
+                                client.button().link('Support Server', SUPPORT_SERVER)
+                            ]
+                        }
+                    ]
+                }).catch(() => null);
+            }
+
+            client.log(`Expired no-prefix: ${id}`, 'warn');
+        }
+    }
+
+    if (expiredUsers) client.log(`Removed ${expiredUsers} expired no-prefix users.`, 'info');
 };
 
 export const readyEvent = async (client) => {
@@ -96,8 +148,9 @@ export const readyEvent = async (client) => {
     await deploySlashCommands(client);
     client.log('Slash commands deployed.', 'info');
 
-    // Expiry Check
+    // Expiry Checks
     await checkPremiumExpiries(client);
+    await checkNoPrefixExpiries(client);
 
     // Dokdo Panel
     client.dokdo = new Client(client, {
