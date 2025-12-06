@@ -26,19 +26,6 @@ export default class ShowLiked extends Command {
             });
             return;
         }
-        if (likedSongs.length === 0) {
-            await ctx.reply({
-                embeds: [
-                    client
-                        .embed()
-                        .desc(
-                            `${client.emoji.cross} **No Liked Songs!**\n\n` +
-                            `${client.emoji.info1} Use \`${prefix}like\` while a song is playing to add it to your liked songs!`
-                        ),
-                ],
-            });
-            return;
-        }
 
         const itemsPerPage = 10;
         const totalPages = Math.ceil(likedSongs.length / itemsPerPage);
