@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Nerox Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar', { username, role }) %>
+    
+    <main class="container">
+        <div class="page-header">
+            <h1>📦 Bulk Operations</h1>
+            <p>Import, Export, or Clear entire databases</p>
+        </div>
+        
+        <% if (result) { %>
+            <div class="alert <%= result.success ? 'alert-success' : 'alert-error' %>">
+                <%= result.success ? '✅' : '❌' %> <%= result.message %>
+            </div>
+        <% } %>
+        
+        <div class="bulk-operations">
+            <form method="POST" action="/admin/bulk" class="bulk-form">
+                <div class="form-group">
+                    <label for="database">Select Database</label>
+                    <select name="database" id="database" required>
+                        <option value="">Choose database...</option>
+                        <% for (const db of databases) { %>
+                            <option value="<%= db %>"><%= db %></option>
+                        <% } %>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="operation">Operation</label>
+                    <select name="operation" id="operation" required onchange="toggleDataField()">
+                        <option value="">Select operation...</option>
+                        <option value="export">📤 Export Data</option>
+                        <option value="import">📥 Import Data</option>
+                        <option value="clear">🗑️ Clear Database</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="dataGroup" style="display: none;">
+                    <label for="data">Data (JSON format)</label>
+                    <textarea name="data" id="data" rows="10" placeholder='{"key1": "value1", "key2": {"nested": true}}'></textarea>
+                </div>
+                
+                <div class="warning-box" id="clearWarning" style="display: none;">
+                    ⚠️ <strong>Warning:</strong> This will permanently delete all data in the selected database!
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="submitBtn">Execute</button>
+            </form>
+            
+            <% if (result && result.data) { %>
+                <div class="export-result">
+                    <h3>📤 Exported Data</h3>
+                    <textarea readonly class="export-textarea"><%= result.data %></textarea>
+                    <button type="button" class="btn btn-secondary" onclick="copyExport()">📋 Copy to Clipboard</button>
+                </div>
+            <% } %>
+        </div>
+    </main>
+    
+    <script>
+        function toggleDataField() {
+            const operation = document.getElementById('operation').value;
+            const dataGroup = document.getElementById('dataGroup');
+            const clearWarning = document.getElementById('clearWarning');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            dataGroup.style.display = operation === 'import' ? 'block' : 'none';
+            clearWarning.style.display = operation === 'clear' ? 'block' : 'none';
+            
+            if (operation === 'clear') {
+                submitBtn.className = 'btn btn-danger';
+                submitBtn.textContent = '🗑️ Clear Database';
+            } else if (operation === 'export') {
+                submitBtn.className = 'btn btn-success';
+                submitBtn.textContent = '📤 Export';
+            } else if (operation === 'import') {
+                submitBtn.className = 'btn btn-primary';
+                submitBtn.textContent = '📥 Import';
+            } else {
+                submitBtn.className = 'btn btn-primary';
+                submitBtn.textContent = 'Execute';
+            }
+        }
+        
+        function copyExport() {
+            const textarea = document.querySelector('.export-textarea');
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                alert('Copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                textarea.select();
+                document.execCommand('copy');
+                alert('Copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Nerox Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar', { username, role }) %>
+    
+    <main class="container">
+        <div class="page-header">
+            <h1>👤 User Dashboard</h1>
+            <p>Welcome back, <%= username %>!</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🚫</div>
+                <div class="stat-info">
+                    <h3>No Prefix Users</h3>
+                    <p class="stat-value"><%= stats.noPrefix %></p>
+                </div>
+                <a href="/user/view/noPrefix" class="btn btn-small">View</a>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">⛔</div>
+                <div class="stat-info">
+                    <h3>Blacklisted</h3>
+                    <p class="stat-value"><%= stats.blacklist %></p>
+                </div>
+                <a href="/user/view/blacklist" class="btn btn-small">View</a>
+            </div>
+        </div>
+        
+        <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="action-buttons">
+                <a href="/user/search" class="btn btn-primary">🔍 Search Database</a>
+                <a href="/user/view/botstaff" class="btn btn-secondary">👑 View Bot Staff</a>
+                <a href="/user/view/serverstaff" class="btn btn-secondary">🏠 View Server Staff</a>
+            </div>
+        </div>
+        
+        <div class="databases-list">
+            <h2>Available Databases</h2>
+            <div class="db-grid">
+                <a href="/user/view/noPrefix" class="db-item">noPrefix</a>
+                <a href="/user/view/botmods" class="db-item">botmods</a>
+                <a href="/user/view/botstaff" class="db-item">botstaff</a>
+                <a href="/user/view/serverstaff" class="db-item">serverstaff</a>
+                <a href="/user/view/blacklist" class="db-item">blacklist</a>
+                <a href="/user/view/ignore" class="db-item">ignore</a>
+                <a href="/user/view/msgCount" class="db-item">msgCount</a>
+                <a href="/user/view/twoFourSeven" class="db-item">twoFourSeven</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

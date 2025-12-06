@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Nerox Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('../partials/navbar', { username, role }) %>
+    
+    <main class="container">
+        <div class="page-header">
+            <h1>🔍 Search Database</h1>
+        </div>
+        
+        <div class="search-form-container">
+            <form method="GET" action="/user/search" class="search-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="database">Database</label>
+                        <select name="database" id="database" required>
+                            <option value="">Select database...</option>
+                            <% for (const db of databases) { %>
+                                <option value="<%= db %>" <%= database === db ? 'selected' : '' %>><%= db %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="key">Key</label>
+                        <input type="text" name="key" id="key" placeholder="Enter key to search" value="<%= key || '' %>" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+        
+        <% if (searched) { %>
+            <div class="search-result">
+                <h2>Search Result</h2>
+                <% if (result === null || result === undefined) { %>
+                    <div class="result-box not-found">
+                        <p>❌ Key "<%= key %>" not found in <%= database %></p>
+                    </div>
+                <% } else if (result.error) { %>
+                    <div class="result-box error">
+                        <p>⚠️ Error: <%= result.error %></p>
+                    </div>
+                <% } else { %>
+                    <div class="result-box success">
+                        <p class="result-label">Value for "<%= key %>":</p>
+                        <pre class="result-value"><%= JSON.stringify(result, null, 2) %></pre>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
+    </main>
+</body>
+</html>

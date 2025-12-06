@@ -9,6 +9,8 @@
   "scripts": {
     "start": "node .",
     "support": "node ./src/support-manager/index.js",
+    "db-api": "node ./src/database-api/index.js",
+    "dashboard": "node ./src/dashboard/index.js",
     "lint": "eslint .",
     "build": "rimraf dist && tsc",
     "format": "prettier --log-level error --write .",
@@ -33,6 +35,8 @@
     "discord.js": "^14.15.2",
     "dokdo": "^1.0.1",
     "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
     "kazagumo": "^3.0.5",
     "kazagumo-apple": "^2.0.2",
     "kazagumo-deezer": "^2.0.2",
