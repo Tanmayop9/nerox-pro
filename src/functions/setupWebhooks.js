@@ -14,7 +14,8 @@ const WEBHOOK_CHANNELS = [
     { name: 'server-add', key: 'serveradd' },
     { name: 'server-remove', key: 'serverchuda' },
     { name: 'player-logs', key: 'playerLogs' },
-    { name: 'blacklist-logs', key: 'blLogs' }
+    { name: 'blacklist-logs', key: 'blLogs' },
+    { name: 'database', key: 'database' }
 ];
 
 /**
