@@ -1,5 +1,6 @@
 import { Command } from '../../classes/abstract/command.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { getPrefix } from '../../utils/getPrefix.js';
 
 export default class ShowLiked extends Command {
     constructor() {
@@ -9,6 +10,7 @@ export default class ShowLiked extends Command {
     }
 
     execute = async (client, ctx) => {
+        const prefix = await getPrefix(client, ctx.guild.id);
         const likedSongs = (await client.db.likedSongs.get(ctx.author.id)) || [];
 
         if (likedSongs.length === 0) {
@@ -18,7 +20,20 @@ export default class ShowLiked extends Command {
                         .embed()
                         .desc(
                             `${client.emoji.cross} **No Liked Songs!**\n\n` +
-                            `${client.emoji.info1} Use \`${client.prefix}like\` while a song is playing to add it to your liked songs!`
+                            `${client.emoji.info1} Use \`${prefix}like\` while a song is playing to add it to your liked songs!`
+                        ),
+                ],
+            });
+            return;
+        }
+        if (likedSongs.length === 0) {
+            await ctx.reply({
+                embeds: [
+                    client
+                        .embed()
+                        .desc(
+                            `${client.emoji.cross} **No Liked Songs!**\n\n` +
+                            `${client.emoji.info1} Use \`${prefix}like\` while a song is playing to add it to your liked songs!`
                         ),
                 ],
             });

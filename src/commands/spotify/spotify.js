@@ -1,4 +1,5 @@
 import { Command } from '../../classes/abstract/command.js';
+import { getPrefix } from '../../utils/getPrefix.js';
 
 export default class Spotify extends Command {
     constructor() {
@@ -72,17 +73,19 @@ export default class Spotify extends Command {
                 await this.handleSearchPlaylist(client, ctx, args.slice(1));
                 break;
             default:
+                const prefix = await getPrefix(client, ctx.guild.id);
                 await ctx.reply({
                     embeds: [
                         client
                             .embed()
-                            .desc(`${client.emoji.cross} Invalid action. Use \`${client.prefix}spotify\` to see available commands.`),
+                            .desc(`${client.emoji.cross} Invalid action. Use \`${prefix}spotify\` to see available commands.`),
                     ],
                 });
         }
     };
 
     handleLogin = async (client, ctx, args) => {
+        const prefix = await getPrefix(client, ctx.guild.id);
         if (!args.length) {
             await ctx.reply({
                 embeds: [
@@ -90,7 +93,7 @@ export default class Spotify extends Command {
                         .embed()
                         .desc(
                             `${client.emoji.cross} Please provide your Spotify profile URL!\n\n` +
-                            `${client.emoji.info1} **Example:** \`${client.prefix}spotify login https://open.spotify.com/user/username\``
+                            `${client.emoji.info1} **Example:** \`${prefix}spotify login https://open.spotify.com/user/username\``
                         ),
                 ],
             });
@@ -132,13 +135,14 @@ export default class Spotify extends Command {
                         `${client.emoji.check} **Spotify Account Linked!**\n\n` +
                         `${client.emoji.info} **Username:** ${username}\n` +
                         `${client.emoji.info} **Profile:** [Click Here](${profileUrl})\n\n` +
-                        `${client.emoji.info1} Use \`${client.prefix}spotify profile\` to view your profile!`
+                        `${client.emoji.info1} Use \`${prefix}spotify profile\` to view your profile!`
                     ),
             ],
         });
     };
 
     handleProfile = async (client, ctx) => {
+        const prefix = await getPrefix(client, ctx.guild.id);
         const spotifyData = await client.db.spotify.get(ctx.author.id);
         
         if (!spotifyData) {
@@ -148,7 +152,7 @@ export default class Spotify extends Command {
                         .embed()
                         .desc(
                             `${client.emoji.cross} You haven't linked your Spotify account yet!\n\n` +
-                            `${client.emoji.info1} Use \`${client.prefix}spotify login <profile_url>\` to link your account.`
+                            `${client.emoji.info1} Use \`${prefix}spotify login <profile_url>\` to link your account.`
                         ),
                 ],
             });
@@ -177,6 +181,7 @@ export default class Spotify extends Command {
     };
 
     handlePlaylist = async (client, ctx) => {
+        const prefix = await getPrefix(client, ctx.guild.id);
         const spotifyData = await client.db.spotify.get(ctx.author.id);
         
         if (!spotifyData) {
@@ -186,7 +191,7 @@ export default class Spotify extends Command {
                         .embed()
                         .desc(
                             `${client.emoji.cross} You haven't linked your Spotify account yet!\n\n` +
-                            `${client.emoji.info1} Use \`${client.prefix}spotify login <profile_url>\` to link your account.`
+                            `${client.emoji.info1} Use \`${prefix}spotify login <profile_url>\` to link your account.`
                         ),
                 ],
             });
@@ -202,7 +207,7 @@ export default class Spotify extends Command {
                         `${client.emoji.info} Visit your profile to view all playlists:\n` +
                         `${client.emoji.info1} [Click Here](${spotifyData.profileUrl})\n\n` +
                         `${client.emoji.info} You can also search for public playlists using:\n` +
-                        `${client.emoji.info1} \`${client.prefix}spotify searchplaylist <query>\``
+                        `${client.emoji.info1} \`${prefix}spotify searchplaylist <query>\``
                     ),
             ],
         });
@@ -237,6 +242,7 @@ export default class Spotify extends Command {
     };
 
     handleSearchPlaylist = async (client, ctx, args) => {
+        const prefix = await getPrefix(client, ctx.guild.id);
         if (!args.length) {
             await ctx.reply({
                 embeds: [
@@ -244,7 +250,7 @@ export default class Spotify extends Command {
                         .embed()
                         .desc(
                             `${client.emoji.cross} Please provide a search query!\n\n` +
-                            `${client.emoji.info1} **Example:** \`${client.prefix}spotify searchplaylist chill vibes\``
+                            `${client.emoji.info1} **Example:** \`${prefix}spotify searchplaylist chill vibes\``
                         ),
                 ],
             });
@@ -262,7 +268,7 @@ export default class Spotify extends Command {
                         `${client.emoji.check} **Searching for:** "${query}"\n\n` +
                         `${client.emoji.info} [Click Here to View Results](${searchUrl})\n\n` +
                         `${client.emoji.info1} You can play any Spotify playlist using:\n` +
-                        `${client.emoji.info1} \`${client.prefix}play <spotify_playlist_url>\``
+                        `${client.emoji.info1} \`${prefix}play <spotify_playlist_url>\``
                     ),
             ],
         });

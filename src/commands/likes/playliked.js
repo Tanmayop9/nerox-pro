@@ -1,4 +1,5 @@
 import { Command } from '../../classes/abstract/command.js';
+import { getPrefix } from '../../utils/getPrefix.js';
 
 export default class PlayLiked extends Command {
     constructor() {
@@ -9,6 +10,7 @@ export default class PlayLiked extends Command {
     }
 
     execute = async (client, ctx) => {
+        const prefix = await getPrefix(client, ctx.guild.id);
         const likedSongs = (await client.db.likedSongs.get(ctx.author.id)) || [];
 
         if (likedSongs.length === 0) {
@@ -18,7 +20,7 @@ export default class PlayLiked extends Command {
                         .embed()
                         .desc(
                             `${client.emoji.cross} **No Liked Songs!**\n\n` +
-                            `${client.emoji.info1} Use \`${client.prefix}like\` while a song is playing to add it to your liked songs!`
+                            `${client.emoji.info1} Use \`${prefix}like\` while a song is playing to add it to your liked songs!`
                         ),
                 ],
             });
@@ -90,7 +92,7 @@ export default class PlayLiked extends Command {
             description += `${client.emoji.cross} **Failed to add:** ${failedCount} songs\n`;
         }
         
-        description += `\n${client.emoji.info1} Use \`${client.prefix}queue\` to view the queue!`;
+        description += `\n${client.emoji.info1} Use \`${prefix}queue\` to view the queue!`;
 
         await waitEmbed.edit({
             embeds: [client.embed().desc(description)],

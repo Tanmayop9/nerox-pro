@@ -1,4 +1,5 @@
 import { Command } from '../../classes/abstract/command.js';
+import { getPrefix } from '../../utils/getPrefix.js';
 
 export default class ClearLikes extends Command {
     constructor() {
@@ -8,6 +9,7 @@ export default class ClearLikes extends Command {
     }
 
     execute = async (client, ctx) => {
+        const prefix = await getPrefix(client, ctx.guild.id);
         const likedSongs = (await client.db.likedSongs.get(ctx.author.id)) || [];
 
         if (likedSongs.length === 0) {
@@ -35,7 +37,7 @@ export default class ClearLikes extends Command {
                     .desc(
                         `${client.emoji.check} **Liked Songs Cleared!**\n\n` +
                         `${client.emoji.info} Successfully removed **${count}** songs from your liked songs!\n\n` +
-                        `${client.emoji.info1} Use \`${client.prefix}like\` to start building your collection again!`
+                        `${client.emoji.info1} Use \`${prefix}like\` to start building your collection again!`
                     ),
             ],
         });

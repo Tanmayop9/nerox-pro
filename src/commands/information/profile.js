@@ -5,12 +5,14 @@
  */
 import { paginator } from '../../utils/paginator.js';
 import { Command } from '../../classes/abstract/command.js';
+import { getPrefix } from '../../utils/getPrefix.js';
 export default class Profile extends Command {
     constructor() {
         super(...arguments);
         this.aliases = ['pr'];
         this.description = 'Shows user profile';
         this.execute = async (client, ctx) => {
+            const prefix = await getPrefix(client, ctx.guild.id);
             let [commandsUsed, songsPlayed, likedSongs, spotifyData, afkData, premiumData] = await Promise.all([
                 client.db.stats.commandsUsed.get(ctx.author.id),
                 client.db.stats.songsPlayed.get(ctx.author.id),
@@ -178,7 +180,7 @@ export default class Profile extends Command {
                            `${client.emoji.info1} Linked Since: ${linkedDate}\n\n`;
             } else {
                 musicDesc += `🎵 **Spotify Not Connected**\n` +
-                           `${client.emoji.info1} Link your Spotify: \`${client.prefix}spotify login <url>\`\n\n`;
+                           `${client.emoji.info1} Link your Spotify: \`${prefix}spotify login <url>\`\n\n`;
             }
             
             musicDesc += `💖 **Liked Songs Library**\n`;
@@ -192,11 +194,11 @@ export default class Profile extends Command {
                     musicDesc += `  **${index + 1}.** ${song.title}\n`;
                 });
                 
-                musicDesc += `\n${client.emoji.info} Use \`${client.prefix}showliked\` to see all!\n`;
-                musicDesc += `${client.emoji.info} Use \`${client.prefix}playliked\` to play them!\n`;
+                musicDesc += `\n${client.emoji.info} Use \`${prefix}showliked\` to see all!\n`;
+                musicDesc += `${client.emoji.info} Use \`${prefix}playliked\` to play them!\n`;
             } else {
                 musicDesc += `${client.emoji.info1} No liked songs yet!\n` +
-                           `${client.emoji.info} Use \`${client.prefix}like\` while playing a song to add it!\n`;
+                           `${client.emoji.info} Use \`${prefix}like\` while playing a song to add it!\n`;
             }
             
             const musicEmbed = client
