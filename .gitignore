@@ -26,3 +26,6 @@ npm-debug.log*
 
 # Package lock may change often
 package-lock.json
+
+# Database storage (local database files)
+database-storage/
