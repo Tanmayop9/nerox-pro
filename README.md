@@ -22,11 +22,9 @@ ADMIN_IDS=your_discord_user_id
 PREFIX=&
 SUPPORT_SERVER=https://discord.gg/your_server
 BACKUP_CHANNEL=your_backup_channel_id
-WEBHOOK_LOGS=your_logs_webhook_url
-WEBHOOK_SERVERADD=your_serveradd_webhook_url
-WEBHOOK_SERVERCHUDA=your_serverchuda_webhook_url
-WEBHOOK_PLAYERLOGS=your_playerlogs_webhook_url
 ```
+
+**Note**: Webhooks are automatically created in guild `1439610258283823217` under a hidden "bot logs" category when the bot starts for the first time.
 
 4. Start the bot:
 ```bash
