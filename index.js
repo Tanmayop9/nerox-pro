@@ -1,4 +1,8 @@
 import { spawn } from "child_process";
+import { config } from "dotenv";
+
+// Load environment variables
+config();
 
 // Function to start a script
 function runScript(path) {
@@ -11,3 +15,13 @@ function runScript(path) {
 // Start both scripts
 runScript("./src/index.js");
 runScript("./src/support-manager/index.js");
+
+// Start database API server if enabled
+if (process.env.ENABLE_DB_API === "true") {
+  runScript("./src/database-api/index.js");
+}
+
+// Start dashboard if enabled
+if (process.env.ENABLE_DASHBOARD === "true") {
+  runScript("./src/dashboard/index.js");
+}

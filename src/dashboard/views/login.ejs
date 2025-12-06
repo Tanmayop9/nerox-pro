@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Nerox Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>🤖 Nerox Dashboard</h1>
+            <p class="subtitle">Login to manage your bot</p>
+            
+            <% if (error) { %>
+                <div class="alert alert-error"><%= error %></div>
+            <% } %>
+            
+            <form method="POST" action="/login">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Login as:</label>
+                    <div class="role-buttons">
+                        <button type="submit" name="role" value="user" class="btn btn-user">
+                            👤 User
+                        </button>
+                        <button type="submit" name="role" value="admin" class="btn btn-admin">
+                            🛡️ Admin
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

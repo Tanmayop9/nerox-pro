@@ -9,7 +9,6 @@ export const josh = (name) => {
         providerOptions: {
             dataDir: `./database-storage/${name}`,
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     });
 };
 /**@codeStyle - https://google.github.io/styleguide/tsguide.html */
