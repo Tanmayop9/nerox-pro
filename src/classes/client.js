@@ -51,7 +51,7 @@ export class ExtendedClient extends Client {
 
     this.emoji = emoji;
     this.config = config;
-    this.webhooks = config.webhooks;
+    this.webhooks = {}; // Will be initialized in ready event
     this.manager = Manager.init(this);
     this.underMaintenance = false;
     this.prefix = config.prefix || "&";
@@ -70,6 +70,7 @@ this.db = {
   ignore: josh("ignore"),
   bypass: josh("bypass"),
   blacklist: josh("blacklist"),
+  config: josh("config"), // Bot configuration (webhooks, etc.)
   
   stats: {
     songsPlayed: josh("stats/songsPlayed"),  
@@ -133,12 +134,7 @@ this.db = {
 
     this.getPlayer = (ctx) => this.manager.players.get(ctx.guild.id);
 
-    this.webhooks = Object.fromEntries(
-      Object.entries(config.webhooks).map(([hook, url]) => [
-        hook,
-        new WebhookClient({ url }),
-      ])
-    );
+    // Webhooks are initialized in ready event after setupWebhooks
 
     this.on("debug", (data) => this.log(data));
     this.on("ready", async () => await readyEvent(this));

@@ -13,7 +13,11 @@
         <% } %>
     </div>
     <div class="nav-user">
-        <span class="user-badge <%= role %>"><%= role === 'admin' ? '🛡️' : '👤' %> <%= username %></span>
-        <a href="/logout" class="btn btn-logout">Logout</a>
+        <% if (role === 'admin') { %>
+            <span class="user-badge <%= role %>">🛡️ <%= username %></span>
+            <a href="/logout" class="btn btn-logout">Logout</a>
+        <% } else { %>
+            <a href="/admin/login" class="btn btn-admin">🛡️ Login as Admin</a>
+        <% } %>
     </div>
 </nav>

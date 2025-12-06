@@ -1,8 +1,6 @@
 /**
  * Nerox Dashboard
  * Web interface for managing the bot database
- * Supports hosting on a separate host from the bot
- * Uses Database API when DB_API_URL is configured
  */
 
 import express from 'express';
@@ -21,15 +19,7 @@ const DASHBOARD_PORT = process.env.DASHBOARD_PORT || 3001;
 const DASHBOARD_HOST = process.env.DASHBOARD_HOST || '0.0.0.0';
 const ADMIN_USERNAME = process.env.DASHBOARD_ADMIN_USER || 'admin';
 const ADMIN_PASSWORD = process.env.DASHBOARD_ADMIN_PASS || 'admin123';
-const USER_PASSWORD = process.env.DASHBOARD_USER_PASS || 'user123';
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-
-// Database API configuration for separate hosting
-const DB_API_URL = process.env.DB_API_URL || null;
-const DB_API_KEY = process.env.DB_API_KEY || 'nerox-secret-key';
-
-// CORS configuration for separate hosting
-const ALLOWED_ORIGINS = process.env.DASHBOARD_ALLOWED_ORIGINS?.split(',') || ['*'];
 
 // Cookie options - secure in production
 const getCookieOptions = (sessionId, isDelete = false) => {
@@ -43,23 +33,6 @@ const getCookieOptions = (sessionId, isDelete = false) => {
     return cookie;
 };
 
-// CORS middleware for separate hosting
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (ALLOWED_ORIGINS.includes('*')) {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-    } else if (origin && ALLOWED_ORIGINS.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200);
-    }
-    next();
-});
-
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -69,72 +42,12 @@ app.use(express.static(join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 
-// Database access - supports both local josh and remote API
+// Database access - local database only
 const databases = {};
 
-// Remote database client for separate hosting
-const remoteDbRequest = async (method, database, key = null, value = null) => {
-    if (!DB_API_URL) return null;
-    
-    const url = key 
-        ? `${DB_API_URL}/db/${database}/${key}`
-        : `${DB_API_URL}/db/${database}`;
-    
-    const options = {
-        method,
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': DB_API_KEY
-        }
-    };
-    
-    if (value !== null && (method === 'POST' || method === 'PUT')) {
-        options.body = JSON.stringify({ value });
-    }
-    
-    try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-            console.error(`[Dashboard] DB API request failed: ${response.status}`);
-            return null;
-        }
-        const data = await response.json();
-        return data.success ? data.data : null;
-    } catch (error) {
-        console.error(`[Dashboard] DB API request error:`, error.message);
-        return null;
-    }
-};
-
-// Database wrapper that works with both local and remote
 const getDatabase = (name) => {
     if (!databases[name]) {
-        if (DB_API_URL) {
-            // Remote database via API
-            databases[name] = {
-                get size() {
-                    return remoteDbRequest('GET', name).then(data => 
-                        data ? Object.keys(data).length : 0
-                    );
-                },
-                get entries() {
-                    return remoteDbRequest('GET', name).then(data => 
-                        data ? Object.entries(data) : []
-                    );
-                },
-                get keys() {
-                    return remoteDbRequest('GET', name).then(data => 
-                        data ? Object.keys(data) : []
-                    );
-                },
-                get: (key) => remoteDbRequest('GET', name, key),
-                set: (key, value) => remoteDbRequest('POST', name, key, value),
-                delete: (key) => remoteDbRequest('DELETE', name, key)
-            };
-        } else {
-            // Local database
-            databases[name] = josh(name);
-        }
+        databases[name] = josh(name);
     }
     return databases[name];
 };
@@ -164,71 +77,65 @@ const generateSessionId = () => {
     return Math.random().toString(36).substring(2) + Date.now().toString(36);
 };
 
-// Auth middleware
-const requireAuth = (role) => (req, res, next) => {
+// Auth middleware for admin only
+const requireAdmin = (req, res, next) => {
     const sessionId = req.headers.cookie?.split(';')
         .find(c => c.trim().startsWith('sessionId='))
         ?.split('=')[1];
     
     const session = sessions.get(sessionId);
     
-    if (!session) {
-        return res.redirect('/login');
-    }
-    
-    if (role === 'admin' && session.role !== 'admin') {
-        return res.status(403).render('error', { 
-            title: 'Access Denied',
-            message: 'You need admin privileges to access this page',
-            role: session.role
-        });
+    if (!session || session.role !== 'admin') {
+        return res.redirect('/admin/login');
     }
     
     req.session = session;
     next();
 };
 
-// Routes
-
-// Home page
-app.get('/', (req, res) => {
+// Middleware to check if user is admin (for navbar display)
+const checkAdmin = (req, res, next) => {
     const sessionId = req.headers.cookie?.split(';')
         .find(c => c.trim().startsWith('sessionId='))
         ?.split('=')[1];
+    
     const session = sessions.get(sessionId);
     
-    if (session) {
-        return res.redirect(session.role === 'admin' ? '/admin' : '/user');
-    }
-    res.redirect('/login');
-});
-
-// Login page
-app.get('/login', (req, res) => {
-    res.render('login', { title: 'Login', error: null });
-});
-
-// Login handler
-app.post('/login', (req, res) => {
-    const { username, password, role } = req.body;
-    
-    if (role === 'admin') {
-        if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-            const sessionId = generateSessionId();
-            sessions.set(sessionId, { username, role: 'admin' });
-            res.setHeader('Set-Cookie', getCookieOptions(sessionId));
-            return res.redirect('/admin');
-        }
-    } else if (role === 'user') {
-        if (password === USER_PASSWORD) {
-            const sessionId = generateSessionId();
-            sessions.set(sessionId, { username: username || 'User', role: 'user' });
-            res.setHeader('Set-Cookie', getCookieOptions(sessionId));
-            return res.redirect('/user');
-        }
+    if (session && session.role === 'admin') {
+        req.isAdmin = true;
+        req.session = session;
+    } else {
+        req.isAdmin = false;
+        req.session = { username: 'User', role: 'user' };
     }
     
-    res.render('login', { title: 'Login', error: 'Invalid credentials' });
+    next();
+};
+
+// Routes
+
+// Home page - redirects to user dashboard (no login required)
+app.get('/', (req, res) => {
+    res.redirect('/user');
+});
+
+// Admin login page
+app.get('/admin/login', (req, res) => {
+    res.render('admin/login', { title: 'Admin Login', error: null });
+});
+
+// Admin login handler
+app.post('/admin/login', (req, res) => {
+    const { username, password } = req.body;
+    
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        const sessionId = generateSessionId();
+        sessions.set(sessionId, { username, role: 'admin' });
+        res.setHeader('Set-Cookie', getCookieOptions(sessionId));
+        return res.redirect('/admin');
+    }
+    
+    res.render('admin/login', { title: 'Admin Login', error: 'Invalid credentials' });
 });
 
 // Logout
@@ -238,13 +145,13 @@ app.get('/logout', (req, res) => {
         ?.split('=')[1];
     sessions.delete(sessionId);
     res.setHeader('Set-Cookie', getCookieOptions('', true));
-    res.redirect('/login');
+    res.redirect('/');
 });
 
-// ==================== USER ROUTES ====================
+// ==================== USER ROUTES (No Auth Required) ====================
 
 // User dashboard
-app.get('/user', requireAuth('user'), async (req, res) => {
+app.get('/user', checkAdmin, async (req, res) => {
     try {
         // Get some stats for display
         const noPrefixDb = getDatabase('noPrefix');
@@ -257,6 +164,7 @@ app.get('/user', requireAuth('user'), async (req, res) => {
             title: 'User Dashboard',
             username: req.session.username,
             role: req.session.role,
+            isAdmin: req.isAdmin,
             stats: {
                 noPrefix: noPrefixCount,
                 blacklist: blacklistCount
@@ -266,13 +174,14 @@ app.get('/user', requireAuth('user'), async (req, res) => {
         res.render('error', { 
             title: 'Error',
             message: error.message,
-            role: req.session.role
+            role: req.session.role,
+            isAdmin: req.isAdmin
         });
     }
 });
 
 // User - View specific database (read only)
-app.get('/user/view/:database', requireAuth('user'), async (req, res) => {
+app.get('/user/view/:database', checkAdmin, async (req, res) => {
     try {
         const { database } = req.params;
         const db = getDatabase(database);
@@ -284,19 +193,21 @@ app.get('/user/view/:database', requireAuth('user'), async (req, res) => {
             database,
             data,
             username: req.session.username,
-            role: req.session.role
+            role: req.session.role,
+            isAdmin: req.isAdmin
         });
     } catch (error) {
         res.render('error', {
             title: 'Error',
             message: error.message,
-            role: req.session.role
+            role: req.session.role,
+            isAdmin: req.isAdmin
         });
     }
 });
 
 // User - Search in database
-app.get('/user/search', requireAuth('user'), async (req, res) => {
+app.get('/user/search', checkAdmin, async (req, res) => {
     const { database, key } = req.query;
     let result = null;
     let searched = false;
@@ -319,14 +230,15 @@ app.get('/user/search', requireAuth('user'), async (req, res) => {
         result,
         searched,
         username: req.session.username,
-        role: req.session.role
+        role: req.session.role,
+        isAdmin: req.isAdmin
     });
 });
 
 // ==================== ADMIN ROUTES ====================
 
 // Admin dashboard
-app.get('/admin', requireAuth('admin'), async (req, res) => {
+app.get('/admin', requireAdmin, async (req, res) => {
     try {
         const stats = {};
         for (const dbName of availableDatabases) {
@@ -355,7 +267,7 @@ app.get('/admin', requireAuth('admin'), async (req, res) => {
 });
 
 // Admin - View/Edit database
-app.get('/admin/database/:database', requireAuth('admin'), async (req, res) => {
+app.get('/admin/database/:database', requireAdmin, async (req, res) => {
     try {
         const { database } = req.params;
         const db = getDatabase(database);
@@ -381,7 +293,7 @@ app.get('/admin/database/:database', requireAuth('admin'), async (req, res) => {
 });
 
 // Admin - Add/Edit entry
-app.post('/admin/database/:database/set', requireAuth('admin'), async (req, res) => {
+app.post('/admin/database/:database/set', requireAdmin, async (req, res) => {
     try {
         const { database } = req.params;
         const { key, value } = req.body;
@@ -402,7 +314,7 @@ app.post('/admin/database/:database/set', requireAuth('admin'), async (req, res)
 });
 
 // Admin - Delete entry
-app.post('/admin/database/:database/delete', requireAuth('admin'), async (req, res) => {
+app.post('/admin/database/:database/delete', requireAdmin, async (req, res) => {
     try {
         const { database } = req.params;
         const { key } = req.body;
@@ -416,7 +328,7 @@ app.post('/admin/database/:database/delete', requireAuth('admin'), async (req, r
 });
 
 // Admin - Bulk operations page
-app.get('/admin/bulk', requireAuth('admin'), (req, res) => {
+app.get('/admin/bulk', requireAdmin, (req, res) => {
     res.render('admin/bulk', {
         title: 'Bulk Operations',
         databases: availableDatabases,
@@ -427,7 +339,7 @@ app.get('/admin/bulk', requireAuth('admin'), (req, res) => {
 });
 
 // Admin - Execute bulk operation
-app.post('/admin/bulk', requireAuth('admin'), async (req, res) => {
+app.post('/admin/bulk', requireAdmin, async (req, res) => {
     const { database, operation, data } = req.body;
     let result = { success: false, message: '' };
     
@@ -468,7 +380,7 @@ app.post('/admin/bulk', requireAuth('admin'), async (req, res) => {
 
 // ==================== API ROUTES (for AJAX) ====================
 
-app.get('/api/database/:database', requireAuth('user'), async (req, res) => {
+app.get('/api/database/:database', checkAdmin, async (req, res) => {
     try {
         const { database } = req.params;
         const db = getDatabase(database);
@@ -479,7 +391,7 @@ app.get('/api/database/:database', requireAuth('user'), async (req, res) => {
     }
 });
 
-app.get('/api/database/:database/:key', requireAuth('user'), async (req, res) => {
+app.get('/api/database/:database/:key', checkAdmin, async (req, res) => {
     try {
         const { database, key } = req.params;
         const db = getDatabase(database);
@@ -494,10 +406,7 @@ app.get('/api/database/:database/:key', requireAuth('user'), async (req, res) =>
 app.listen(DASHBOARD_PORT, DASHBOARD_HOST, () => {
     console.log(`[Dashboard] Running on http://${DASHBOARD_HOST}:${DASHBOARD_PORT}`);
     console.log(`[Dashboard] Admin login: ${ADMIN_USERNAME}`);
-    console.log(`[Dashboard] Mode: ${DB_API_URL ? 'Remote DB API' : 'Local Database'}`);
-    if (DB_API_URL) {
-        console.log(`[Dashboard] DB API URL: ${DB_API_URL}`);
-    }
+    console.log(`[Dashboard] Using local database`);
 });
 
 export default app;

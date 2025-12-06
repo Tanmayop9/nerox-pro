@@ -661,3 +661,21 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.back-link {
+    color: #00ADB5;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}

@@ -11,11 +11,6 @@ export const config = {
   links: {
       support: process.env.SUPPORT_SERVER || "https://discord.gg/p6nXDJMeyc"
   },
-  backup: process.env.BACKUP_CHANNEL || "1347901024026759278",
-  webhooks: {
-    logs: process.env.WEBHOOK_LOGS,
-    serveradd: process.env.WEBHOOK_SERVERADD,
-    serverchuda: process.env.WEBHOOK_SERVERCHUDA,
-    playerLogs: process.env.WEBHOOK_PLAYERLOGS
-  }
+  backup: process.env.BACKUP_CHANNEL || "1347901024026759278"
+  // Webhooks are dynamically created and stored in database
 };

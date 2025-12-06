@@ -3,6 +3,8 @@ import { loadEvents } from '../loaders/events.js';
 import { loadCommands } from '../loaders/msgCmds.js';
 import { connect247 } from '../functions/connect247.js';
 import { deploySlashCommands } from '../loaders/slashCmds.js';
+import { setupWebhooks } from '../functions/setupWebhooks.js';
+import { initAutoBackup } from '../functions/autoBackup.js';
 
 const SUPPORT_SERVER = 'https://discord.gg/p6nXDJMeyc';
 
@@ -138,6 +140,19 @@ export const readyEvent = async (client) => {
 
     client.log(`Logged in as ${client.user.tag} [${client.user.id}]`, 'success');
 
+    // Setup webhooks from database or create them
+    const webhookUrls = await setupWebhooks(client);
+    if (webhookUrls) {
+        const { WebhookClient } = await import('discord.js');
+        client.webhooks = Object.fromEntries(
+            Object.entries(webhookUrls).map(([hook, url]) => [
+                hook,
+                new WebhookClient({ url }),
+            ])
+        );
+        client.log('Webhooks initialized successfully.', 'info');
+    }
+
     // Event & Command Loaders
     await loadEvents(client);
     client.log('Events loaded.', 'info');
@@ -167,6 +182,9 @@ export const readyEvent = async (client) => {
     };
 
     client.log(`Ready in ${guildCount} guilds with ${userCount.total} users (${userCount.cached} cached).`, 'info');
+
+    // Initialize automatic daily backup
+    await initAutoBackup(client);
 
     // 24/7 Player Load
     const node = [...client.manager.shoukaku.nodes][0][1];

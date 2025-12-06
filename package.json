@@ -9,7 +9,6 @@
   "scripts": {
     "start": "node .",
     "support": "node ./src/support-manager/index.js",
-    "db-api": "node ./src/database-api/index.js",
     "dashboard": "node ./src/dashboard/index.js",
     "lint": "eslint .",
     "build": "rimraf dist && tsc",

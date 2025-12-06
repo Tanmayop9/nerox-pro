@@ -16,11 +16,6 @@ function runScript(path) {
 runScript("./src/index.js");
 runScript("./src/support-manager/index.js");
 
-// Start database API server if enabled
-if (process.env.ENABLE_DB_API === "true") {
-  runScript("./src/database-api/index.js");
-}
-
 // Start dashboard if enabled
 if (process.env.ENABLE_DASHBOARD === "true") {
   runScript("./src/dashboard/index.js");
