@@ -71,6 +71,10 @@ this.db = {
   bypass: josh("bypass"),
   blacklist: josh("blacklist"),
   config: josh("config"), // Bot configuration (webhooks, etc.)
+  prefix: josh("prefix"), // Guild-specific prefixes
+  afk: josh("afk"), // AFK status
+  spotify: josh("spotify"), // Spotify user data
+  likedSongs: josh("likedSongs"), // User liked songs
   
   stats: {
     songsPlayed: josh("stats/songsPlayed"),  
