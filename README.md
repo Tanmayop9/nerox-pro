@@ -139,10 +139,11 @@ The bot includes a web dashboard for managing the database through a user-friend
 
 - **User Area**: View database contents, search for specific keys
 - **Admin Area**: Full CRUD operations, bulk import/export, clear databases
+- **Separate Hosting**: Dashboard can be hosted on a different server from the bot
 
 ### Starting the Dashboard
 
-**Option 1: Run separately**
+**Option 1: Run separately (same server)**
 ```bash
 npm run dashboard
 ```
@@ -153,15 +154,35 @@ Add to your `.env` file:
 ENABLE_DASHBOARD=true
 ```
 
+**Option 3: Host on a different server**
+1. Start the Database API on the bot server:
+   ```
+   ENABLE_DB_API=true
+   DB_API_PORT=3000
+   DB_API_KEY=your-secret-api-key
+   ```
+2. On the dashboard server, configure:
+   ```
+   DB_API_URL=http://your-bot-server:3000
+   DB_API_KEY=your-secret-api-key
+   DASHBOARD_PORT=3001
+   DASHBOARD_HOST=0.0.0.0
+   ```
+3. Run `npm run dashboard` on the dashboard server
+
 ### Environment Variables for Dashboard
 
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `ENABLE_DASHBOARD` | Enable dashboard when starting with `npm start` | `false` |
 | `DASHBOARD_PORT` | Port for the dashboard | `3001` |
+| `DASHBOARD_HOST` | Host to bind to | `0.0.0.0` |
 | `DASHBOARD_ADMIN_USER` | Admin username | `admin` |
 | `DASHBOARD_ADMIN_PASS` | Admin password | `admin123` |
 | `DASHBOARD_USER_PASS` | User area password | `user123` |
+| `DB_API_URL` | Remote Database API URL (for separate hosting) | `null` |
+| `DB_API_KEY` | API key for Database API | `nerox-secret-key` |
+| `DASHBOARD_ALLOWED_ORIGINS` | Comma-separated allowed CORS origins | `*` |
 
 ### Dashboard Routes
 

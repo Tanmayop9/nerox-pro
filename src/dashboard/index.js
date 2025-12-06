@@ -1,7 +1,8 @@
 /**
  * Nerox Dashboard
  * Web interface for managing the bot database
- * Has User and Admin areas
+ * Supports hosting on a separate host from the bot
+ * Uses Database API when DB_API_URL is configured
  */
 
 import express from 'express';
@@ -17,10 +18,18 @@ const app = express();
 
 // Configuration
 const DASHBOARD_PORT = process.env.DASHBOARD_PORT || 3001;
+const DASHBOARD_HOST = process.env.DASHBOARD_HOST || '0.0.0.0';
 const ADMIN_USERNAME = process.env.DASHBOARD_ADMIN_USER || 'admin';
 const ADMIN_PASSWORD = process.env.DASHBOARD_ADMIN_PASS || 'admin123';
 const USER_PASSWORD = process.env.DASHBOARD_USER_PASS || 'user123';
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
+// Database API configuration for separate hosting
+const DB_API_URL = process.env.DB_API_URL || null;
+const DB_API_KEY = process.env.DB_API_KEY || 'nerox-secret-key';
+
+// CORS configuration for separate hosting
+const ALLOWED_ORIGINS = process.env.DASHBOARD_ALLOWED_ORIGINS?.split(',') || ['*'];
 
 // Cookie options - secure in production
 const getCookieOptions = (sessionId, isDelete = false) => {
@@ -34,6 +43,21 @@ const getCookieOptions = (sessionId, isDelete = false) => {
     return cookie;
 };
 
+// CORS middleware for separate hosting
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (ALLOWED_ORIGINS.includes('*') || ALLOWED_ORIGINS.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    }
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -43,12 +67,63 @@ app.use(express.static(join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 
-// Database instances cache
+// Database access - supports both local josh and remote API
 const databases = {};
 
+// Remote database client for separate hosting
+const remoteDbRequest = async (method, database, key = null, value = null) => {
+    if (!DB_API_URL) return null;
+    
+    const url = key 
+        ? `${DB_API_URL}/db/${database}/${key}`
+        : `${DB_API_URL}/db/${database}`;
+    
+    const options = {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': DB_API_KEY
+        }
+    };
+    
+    if (value !== null && (method === 'POST' || method === 'PUT')) {
+        options.body = JSON.stringify({ value });
+    }
+    
+    const response = await fetch(url, options);
+    const data = await response.json();
+    return data.success ? data.data : null;
+};
+
+// Database wrapper that works with both local and remote
 const getDatabase = (name) => {
     if (!databases[name]) {
-        databases[name] = josh(name);
+        if (DB_API_URL) {
+            // Remote database via API
+            databases[name] = {
+                get size() {
+                    return remoteDbRequest('GET', name).then(data => 
+                        data ? Object.keys(data).length : 0
+                    );
+                },
+                get entries() {
+                    return remoteDbRequest('GET', name).then(data => 
+                        data ? Object.entries(data) : []
+                    );
+                },
+                get keys() {
+                    return remoteDbRequest('GET', name).then(data => 
+                        data ? Object.keys(data) : []
+                    );
+                },
+                get: (key) => remoteDbRequest('GET', name, key),
+                set: (key, value) => remoteDbRequest('POST', name, key, value),
+                delete: (key) => remoteDbRequest('DELETE', name, key)
+            };
+        } else {
+            // Local database
+            databases[name] = josh(name);
+        }
     }
     return databases[name];
 };
@@ -405,10 +480,13 @@ app.get('/api/database/:database/:key', requireAuth('user'), async (req, res) =>
 });
 
 // Start server
-app.listen(DASHBOARD_PORT, () => {
-    console.log(`[Dashboard] Running on http://localhost:${DASHBOARD_PORT}`);
-    console.log(`[Dashboard] Admin login: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD}`);
-    console.log(`[Dashboard] User password: ${USER_PASSWORD}`);
+app.listen(DASHBOARD_PORT, DASHBOARD_HOST, () => {
+    console.log(`[Dashboard] Running on http://${DASHBOARD_HOST}:${DASHBOARD_PORT}`);
+    console.log(`[Dashboard] Admin login: ${ADMIN_USERNAME}`);
+    console.log(`[Dashboard] Mode: ${DB_API_URL ? 'Remote DB API' : 'Local Database'}`);
+    if (DB_API_URL) {
+        console.log(`[Dashboard] DB API URL: ${DB_API_URL}`);
+    }
 });
 
 export default app;

@@ -92,7 +92,17 @@ this.db = {
       required: () =>
         this.generateInvite({
           scopes: [OAuth2Scopes.Bot],
-          permissions: ["Administrator"],
+          permissions: [
+            "ViewChannel",
+            "SendMessages",
+            "EmbedLinks",
+            "AttachFiles",
+            "ReadMessageHistory",
+            "AddReactions",
+            "Connect",
+            "Speak",
+            "UseVAD",
+          ],
         }),
     };
 
