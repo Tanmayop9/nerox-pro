@@ -46,8 +46,10 @@ const getCookieOptions = (sessionId, isDelete = false) => {
 // CORS middleware for separate hosting
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    if (ALLOWED_ORIGINS.includes('*') || ALLOWED_ORIGINS.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin || '*');
+    if (ALLOWED_ORIGINS.includes('*')) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+    } else if (origin && ALLOWED_ORIGINS.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
     }
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -90,9 +92,18 @@ const remoteDbRequest = async (method, database, key = null, value = null) => {
         options.body = JSON.stringify({ value });
     }
     
-    const response = await fetch(url, options);
-    const data = await response.json();
-    return data.success ? data.data : null;
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            console.error(`[Dashboard] DB API request failed: ${response.status}`);
+            return null;
+        }
+        const data = await response.json();
+        return data.success ? data.data : null;
+    } catch (error) {
+        console.error(`[Dashboard] DB API request error:`, error.message);
+        return null;
+    }
 };
 
 // Database wrapper that works with both local and remote
