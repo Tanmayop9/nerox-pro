@@ -9,12 +9,48 @@ import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { AttachmentBuilder } from 'discord.js';
-import { zipper } from '../utils/zipper.js';
+import { createWriteStream } from 'node:fs';
+import archiver from 'archiver';
+import { access } from 'node:fs/promises';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// 24 hours in milliseconds
-const BACKUP_INTERVAL = 24 * 60 * 60 * 1000;
+// Configuration
+const DATABASE_DIR = './database-storage';
+const TIMEZONE = 'Asia/Kolkata';
+const BACKUP_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+/**
+ * Create zip file of database directory only
+ * @param {string} zipPath - Output zip file path
+ * @returns {Promise<string>} - Resolved zip path
+ */
+async function zipDatabase(zipPath) {
+    const resolvedZipPath = resolve(zipPath);
+    
+    // Delete existing zip if present
+    await access(resolvedZipPath)
+        .then(async () => await unlink(resolvedZipPath))
+        .catch(() => null);
+
+    const output = createWriteStream(resolvedZipPath);
+    const archive = archiver('zip', {
+        zlib: { level: 9 },
+    });
+
+    archive.pipe(output);
+    
+    // Only add the database directory
+    archive.directory(DATABASE_DIR, 'database-storage');
+    
+    await archive.finalize();
+    
+    await new Promise((resolve) => {
+        output.on('close', () => resolve());
+    });
+    
+    return resolvedZipPath;
+}
 
 /**
  * Send database backup to webhook
@@ -29,19 +65,18 @@ async function sendBackup(client) {
 
         client.log('Starting automatic database backup...', 'info');
 
-        const metadata = JSON.parse(await readFile(resolve(__dirname, '../../package.json'), 'utf8'));
-        const time = moment().tz('Asia/Kolkata').format('DD_MM_YY_HH_mm');
-        const file = `./Nerox_v${metadata.version}_${time}.zip`;
+        const time = moment().tz(TIMEZONE).format('DD_MM_YY_HH_mm');
+        const file = `./Database_Backup_${time}.zip`;
 
-        // Create backup zip
-        await zipper(file);
-        client.log(`Backup created: ${file}`, 'info');
+        // Create backup zip of database only
+        await zipDatabase(file);
+        client.log(`Database backup created: ${file}`, 'info');
 
         // Send to webhook
         await client.webhooks.database.send({
             username: 'Database Backup',
             avatarURL: client.user?.displayAvatarURL(),
-            content: `📦 **Daily Database Backup** - ${moment().tz('Asia/Kolkata').format('DD/MM/YYYY HH:mm:ss')}`,
+            content: `📦 **Daily Database Backup** - ${moment().tz(TIMEZONE).format('DD/MM/YYYY HH:mm:ss')}`,
             files: [new AttachmentBuilder(file, { name: file })]
         });
 
