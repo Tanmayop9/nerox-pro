@@ -72,26 +72,27 @@ ENABLE_DASHBOARD=true
 | `DASHBOARD_HOST` | Host to bind to | `0.0.0.0` |
 | `DASHBOARD_ADMIN_USER` | Admin username | `admin` |
 | `DASHBOARD_ADMIN_PASS` | Admin password | `admin123` |
-| `DASHBOARD_USER_PASS` | User area password | `user123` |
 
 ### Dashboard Routes
 
 | Route | Description | Access |
 |-------|-------------|--------|
-| `/login` | Login page | Public |
-| `/user` | User dashboard | User/Admin |
-| `/user/view/:database` | View database (read-only) | User/Admin |
-| `/user/search` | Search in databases | User/Admin |
+| `/` | User dashboard (auto-open) | Public |
+| `/user` | User dashboard | Public |
+| `/user/view/:database` | View database (read-only) | Public |
+| `/user/search` | Search in databases | Public |
+| `/admin/login` | Admin login page | Public |
 | `/admin` | Admin dashboard | Admin only |
 | `/admin/database/:database` | Manage database (CRUD) | Admin only |
 | `/admin/bulk` | Bulk operations (import/export/clear) | Admin only |
 
-### Default Credentials
+### Admin Credentials
 
 ⚠️ **Change these in production!**
 
 - **Admin**: `admin` / `admin123`
-- **User**: any username / `user123`
+
+**Note**: User area is publicly accessible without login. Only admin functions require authentication.
 
 ## Scripts
 

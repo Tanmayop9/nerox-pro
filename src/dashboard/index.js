@@ -19,7 +19,6 @@ const DASHBOARD_PORT = process.env.DASHBOARD_PORT || 3001;
 const DASHBOARD_HOST = process.env.DASHBOARD_HOST || '0.0.0.0';
 const ADMIN_USERNAME = process.env.DASHBOARD_ADMIN_USER || 'admin';
 const ADMIN_PASSWORD = process.env.DASHBOARD_ADMIN_PASS || 'admin123';
-const USER_PASSWORD = process.env.DASHBOARD_USER_PASS || 'user123';
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 // Cookie options - secure in production
@@ -78,71 +77,58 @@ const generateSessionId = () => {
     return Math.random().toString(36).substring(2) + Date.now().toString(36);
 };
 
-// Auth middleware
-const requireAuth = (role) => (req, res, next) => {
+// Auth middleware for admin only
+const requireAdmin = (req, res, next) => {
     const sessionId = req.headers.cookie?.split(';')
         .find(c => c.trim().startsWith('sessionId='))
         ?.split('=')[1];
     
     const session = sessions.get(sessionId);
     
-    if (!session) {
-        return res.redirect('/login');
-    }
-    
-    if (role === 'admin' && session.role !== 'admin') {
-        return res.status(403).render('error', { 
-            title: 'Access Denied',
-            message: 'You need admin privileges to access this page',
-            role: session.role
-        });
+    if (!session || session.role !== 'admin') {
+        return res.redirect('/admin/login');
     }
     
     req.session = session;
     next();
 };
 
-// Routes
-
-// Home page
-app.get('/', (req, res) => {
+// Middleware to check if user is admin (for navbar display)
+const checkAdmin = (req, res, next) => {
     const sessionId = req.headers.cookie?.split(';')
         .find(c => c.trim().startsWith('sessionId='))
         ?.split('=')[1];
+    
     const session = sessions.get(sessionId);
-    
-    if (session) {
-        return res.redirect(session.role === 'admin' ? '/admin' : '/user');
-    }
-    res.redirect('/login');
+    req.isAdmin = session?.role === 'admin';
+    req.session = session || { username: 'User', role: 'user' };
+    next();
+};
+
+// Routes
+
+// Home page - redirects to user dashboard (no login required)
+app.get('/', (req, res) => {
+    res.redirect('/user');
 });
 
-// Login page
-app.get('/login', (req, res) => {
-    res.render('login', { title: 'Login', error: null });
+// Admin login page
+app.get('/admin/login', (req, res) => {
+    res.render('admin/login', { title: 'Admin Login', error: null });
 });
 
-// Login handler
-app.post('/login', (req, res) => {
-    const { username, password, role } = req.body;
+// Admin login handler
+app.post('/admin/login', (req, res) => {
+    const { username, password } = req.body;
     
-    if (role === 'admin') {
-        if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-            const sessionId = generateSessionId();
-            sessions.set(sessionId, { username, role: 'admin' });
-            res.setHeader('Set-Cookie', getCookieOptions(sessionId));
-            return res.redirect('/admin');
-        }
-    } else if (role === 'user') {
-        if (password === USER_PASSWORD) {
-            const sessionId = generateSessionId();
-            sessions.set(sessionId, { username: username || 'User', role: 'user' });
-            res.setHeader('Set-Cookie', getCookieOptions(sessionId));
-            return res.redirect('/user');
-        }
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        const sessionId = generateSessionId();
+        sessions.set(sessionId, { username, role: 'admin' });
+        res.setHeader('Set-Cookie', getCookieOptions(sessionId));
+        return res.redirect('/admin');
     }
     
-    res.render('login', { title: 'Login', error: 'Invalid credentials' });
+    res.render('admin/login', { title: 'Admin Login', error: 'Invalid credentials' });
 });
 
 // Logout
@@ -152,13 +138,13 @@ app.get('/logout', (req, res) => {
         ?.split('=')[1];
     sessions.delete(sessionId);
     res.setHeader('Set-Cookie', getCookieOptions('', true));
-    res.redirect('/login');
+    res.redirect('/');
 });
 
-// ==================== USER ROUTES ====================
+// ==================== USER ROUTES (No Auth Required) ====================
 
 // User dashboard
-app.get('/user', requireAuth('user'), async (req, res) => {
+app.get('/user', checkAdmin, async (req, res) => {
     try {
         // Get some stats for display
         const noPrefixDb = getDatabase('noPrefix');
@@ -171,6 +157,7 @@ app.get('/user', requireAuth('user'), async (req, res) => {
             title: 'User Dashboard',
             username: req.session.username,
             role: req.session.role,
+            isAdmin: req.isAdmin,
             stats: {
                 noPrefix: noPrefixCount,
                 blacklist: blacklistCount
@@ -180,13 +167,14 @@ app.get('/user', requireAuth('user'), async (req, res) => {
         res.render('error', { 
             title: 'Error',
             message: error.message,
-            role: req.session.role
+            role: req.session.role,
+            isAdmin: req.isAdmin
         });
     }
 });
 
 // User - View specific database (read only)
-app.get('/user/view/:database', requireAuth('user'), async (req, res) => {
+app.get('/user/view/:database', checkAdmin, async (req, res) => {
     try {
         const { database } = req.params;
         const db = getDatabase(database);
@@ -198,19 +186,21 @@ app.get('/user/view/:database', requireAuth('user'), async (req, res) => {
             database,
             data,
             username: req.session.username,
-            role: req.session.role
+            role: req.session.role,
+            isAdmin: req.isAdmin
         });
     } catch (error) {
         res.render('error', {
             title: 'Error',
             message: error.message,
-            role: req.session.role
+            role: req.session.role,
+            isAdmin: req.isAdmin
         });
     }
 });
 
 // User - Search in database
-app.get('/user/search', requireAuth('user'), async (req, res) => {
+app.get('/user/search', checkAdmin, async (req, res) => {
     const { database, key } = req.query;
     let result = null;
     let searched = false;
@@ -233,14 +223,15 @@ app.get('/user/search', requireAuth('user'), async (req, res) => {
         result,
         searched,
         username: req.session.username,
-        role: req.session.role
+        role: req.session.role,
+        isAdmin: req.isAdmin
     });
 });
 
 // ==================== ADMIN ROUTES ====================
 
 // Admin dashboard
-app.get('/admin', requireAuth('admin'), async (req, res) => {
+app.get('/admin', requireAdmin, async (req, res) => {
     try {
         const stats = {};
         for (const dbName of availableDatabases) {
@@ -269,7 +260,7 @@ app.get('/admin', requireAuth('admin'), async (req, res) => {
 });
 
 // Admin - View/Edit database
-app.get('/admin/database/:database', requireAuth('admin'), async (req, res) => {
+app.get('/admin/database/:database', requireAdmin, async (req, res) => {
     try {
         const { database } = req.params;
         const db = getDatabase(database);
@@ -295,7 +286,7 @@ app.get('/admin/database/:database', requireAuth('admin'), async (req, res) => {
 });
 
 // Admin - Add/Edit entry
-app.post('/admin/database/:database/set', requireAuth('admin'), async (req, res) => {
+app.post('/admin/database/:database/set', requireAdmin, async (req, res) => {
     try {
         const { database } = req.params;
         const { key, value } = req.body;
@@ -316,7 +307,7 @@ app.post('/admin/database/:database/set', requireAuth('admin'), async (req, res)
 });
 
 // Admin - Delete entry
-app.post('/admin/database/:database/delete', requireAuth('admin'), async (req, res) => {
+app.post('/admin/database/:database/delete', requireAdmin, async (req, res) => {
     try {
         const { database } = req.params;
         const { key } = req.body;
@@ -330,7 +321,7 @@ app.post('/admin/database/:database/delete', requireAuth('admin'), async (req, r
 });
 
 // Admin - Bulk operations page
-app.get('/admin/bulk', requireAuth('admin'), (req, res) => {
+app.get('/admin/bulk', requireAdmin, (req, res) => {
     res.render('admin/bulk', {
         title: 'Bulk Operations',
         databases: availableDatabases,
@@ -341,7 +332,7 @@ app.get('/admin/bulk', requireAuth('admin'), (req, res) => {
 });
 
 // Admin - Execute bulk operation
-app.post('/admin/bulk', requireAuth('admin'), async (req, res) => {
+app.post('/admin/bulk', requireAdmin, async (req, res) => {
     const { database, operation, data } = req.body;
     let result = { success: false, message: '' };
     
@@ -382,7 +373,7 @@ app.post('/admin/bulk', requireAuth('admin'), async (req, res) => {
 
 // ==================== API ROUTES (for AJAX) ====================
 
-app.get('/api/database/:database', requireAuth('user'), async (req, res) => {
+app.get('/api/database/:database', checkAdmin, async (req, res) => {
     try {
         const { database } = req.params;
         const db = getDatabase(database);
@@ -393,7 +384,7 @@ app.get('/api/database/:database', requireAuth('user'), async (req, res) => {
     }
 });
 
-app.get('/api/database/:database/:key', requireAuth('user'), async (req, res) => {
+app.get('/api/database/:database/:key', checkAdmin, async (req, res) => {
     try {
         const { database, key } = req.params;
         const db = getDatabase(database);
