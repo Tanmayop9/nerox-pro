@@ -23,8 +23,8 @@ const WEBHOOK_CHANNELS = [
  */
 export async function setupWebhooks(client) {
     try {
-        // Check if webhooks are already set up
-        const webhooksDb = client.db.webhookUrls || await client.db.noPrefix.get('webhookUrls');
+        // Check if webhooks are already set up in config database
+        const webhooksDb = await client.db.config.get('webhookUrls');
         
         if (webhooksDb && Object.keys(webhooksDb).length === WEBHOOK_CHANNELS.length) {
             client.log('Webhooks already configured, skipping setup', 'info');
@@ -100,7 +100,7 @@ export async function setupWebhooks(client) {
 
             // Check if webhook already exists for this channel
             const existingWebhooks = await channel.fetchWebhooks();
-            let webhook = existingWebhooks.find(wh => wh.owner.id === client.user.id);
+            let webhook = existingWebhooks.find(wh => wh.owner?.id === client.user.id);
 
             if (!webhook) {
                 client.log(`Creating webhook for channel: ${name}`, 'info');
@@ -114,8 +114,8 @@ export async function setupWebhooks(client) {
             client.log(`Webhook configured for ${name}: ${webhook.id}`, 'info');
         }
 
-        // Store webhook URLs in database
-        await client.db.noPrefix.set('webhookUrls', webhookUrls);
+        // Store webhook URLs in config database
+        await client.db.config.set('webhookUrls', webhookUrls);
         client.log('Webhook setup complete!', 'info');
 
         return webhookUrls;

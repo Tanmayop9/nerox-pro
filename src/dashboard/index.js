@@ -100,8 +100,15 @@ const checkAdmin = (req, res, next) => {
         ?.split('=')[1];
     
     const session = sessions.get(sessionId);
-    req.isAdmin = session?.role === 'admin';
-    req.session = session || { username: 'User', role: 'user' };
+    
+    if (session && session.role === 'admin') {
+        req.isAdmin = true;
+        req.session = session;
+    } else {
+        req.isAdmin = false;
+        req.session = { username: 'User', role: 'user' };
+    }
+    
     next();
 };
 

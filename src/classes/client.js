@@ -70,6 +70,7 @@ this.db = {
   ignore: josh("ignore"),
   bypass: josh("bypass"),
   blacklist: josh("blacklist"),
+  config: josh("config"), // Bot configuration (webhooks, etc.)
   
   stats: {
     songsPlayed: josh("stats/songsPlayed"),  
