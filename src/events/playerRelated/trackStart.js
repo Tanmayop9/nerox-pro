@@ -50,6 +50,9 @@ export default class PlayerStart {
                             client.emoji.autoplay
                         ),
                 ]),
+                new ActionRowBuilder().addComponents([
+                    client.button().secondary(`playEmbedButton_${player.guildId}_like`, `Like`, client.emoji.heart),
+                ]),
             ],
         });
 

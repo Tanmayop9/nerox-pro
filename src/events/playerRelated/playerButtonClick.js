@@ -74,6 +74,62 @@ export default class PlayerButtonClick {
                         player.queue.previous.pop();
                     }
                     break;
+                case 'like':
+                    {
+                        try {
+                            const track = player.queue.current;
+                            if (!track) {
+                                await interaction.reply({
+                                    embeds: [
+                                        client.embed().desc(`${client.emoji.cross} No track is currently playing.`),
+                                    ],
+                                    ephemeral: true,
+                                });
+                                break;
+                            }
+                            
+                            const userId = interaction.user.id;
+                            const likedSongs = await client.db.likedSongs.get(userId) || [];
+                            
+                            // Check if song is already liked
+                            const trackInfo = {
+                                title: track.title,
+                                author: track.author,
+                                uri: track.uri,
+                                length: track.length
+                            };
+                            
+                            const isAlreadyLiked = likedSongs.some(song => song.uri === track.uri);
+                            
+                            if (isAlreadyLiked) {
+                                await interaction.reply({
+                                    embeds: [
+                                        client.embed().desc(`${client.emoji.heart} You've already liked **${track.title}**!`),
+                                    ],
+                                    ephemeral: true,
+                                });
+                            } else {
+                                likedSongs.push(trackInfo);
+                                await client.db.likedSongs.set(userId, likedSongs);
+                                
+                                await interaction.reply({
+                                    embeds: [
+                                        client.embed().desc(`${client.emoji.heart} Added **${track.title}** to your liked songs!`),
+                                    ],
+                                    ephemeral: true,
+                                });
+                            }
+                        } catch (error) {
+                            console.error('[Player Button] Error handling like button:', error);
+                            await interaction.reply({
+                                embeds: [
+                                    client.embed().desc(`${client.emoji.cross} Failed to like song. Please try again later.`),
+                                ],
+                                ephemeral: true,
+                            }).catch(() => {});
+                        }
+                    }
+                    break;
             }
             if (!interaction.deferred && !interaction.replied)
                 await interaction.deferUpdate();

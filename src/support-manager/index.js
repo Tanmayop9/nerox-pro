@@ -12,6 +12,7 @@ import { config as loadEnv } from 'dotenv';
 import { Client, GatewayIntentBits, Collection, Partials, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { josh } from '../functions/josh.js';
 import { log } from '../logger.js';
+import { emoji } from '../assets/emoji.js';
 import { readdirSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
@@ -72,19 +73,8 @@ class SupportManager extends Client {
             info: '#6C63FF',
         };
 
-        this.emoji = {
-            check: '✅',
-            cross: '❌',
-            info: 'ℹ️',
-            warn: '⚠️',
-            giveaway: '🎉',
-            premium: '👑',
-            noprefix: '⚡',
-            ticket: '🎫',
-            star: '⭐',
-            heart: '💖',
-            sparkle: '✨',
-        };
+        // Use emojis from main bot for consistency
+        this.emoji = emoji;
     }
 
     embed(color = this.colors.primary) {
