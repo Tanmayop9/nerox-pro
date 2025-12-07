@@ -42,17 +42,7 @@ const checkPremiumExpiries = async (client) => {
                 user.send({
                     embeds: [
                         client.embed()
-                            .title('Premium Expired')
-                            .desc(`Your **Nerox Premium** has expired.\n\nTo renew, click the button below or join our [Support Server](${SUPPORT_SERVER})`)
-                            .footer({ text: 'Nerox Premium | Expired' })
-                    ],
-                    components: [
-                        {
-                            type: 1,
-                            components: [
-                                client.button().link('Renew Premium', SUPPORT_SERVER)
-                            ]
-                        }
+                            .desc(`${client.emoji.warning} Premium expired\n\n${client.emoji.info} **[Renew](${SUPPORT_SERVER})**`)
                     ]
                 }).catch(() => null);
             }

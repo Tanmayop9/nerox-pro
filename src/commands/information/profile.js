@@ -111,9 +111,9 @@ export default class Profile extends Command {
                     `${client.emoji.info1} Songs Played: **${songsPlayed}**\n` +
                     `${client.emoji.info1} Liked Songs: **${likedSongs.length}**\n\n` +
                     `💎 **Status:**\n` +
-                    `${client.emoji.info1} Premium: ${premiumData ? '✅ Active' : '❌ Inactive'}\n` +
-                    `${client.emoji.info1} AFK: ${afkData ? `✅ Yes - ${afkData.reason}` : '❌ No'}\n` +
-                    `${client.emoji.info1} Spotify: ${spotifyData ? '🎵 Linked' : '❌ Not Linked'}\n\n` +
+                    `${client.emoji.info1} Premium: ${premiumData ? `${client.emoji.check} Active` : `${client.emoji.cross} Inactive`}\n` +
+                    `${client.emoji.info1} AFK: ${afkData ? `${client.emoji.check} ${afkData.reason}` : `${client.emoji.cross} No`}\n` +
+                    `${client.emoji.info1} Spotify: ${spotifyData ? `${client.emoji.music} Linked` : `${client.emoji.cross} Not Linked`}\n\n` +
                     `📅 **Account Info:**\n` +
                     `${client.emoji.info1} Discord User ID: \`${ctx.author.id}\`\n` +
                     `${client.emoji.info1} Account Age: **${accountAge} days**\n` +
@@ -155,7 +155,7 @@ export default class Profile extends Command {
                     `╚══════════════════════════════╝\n\n` +
                     Object.entries(achievements)
                         .map(([key, value]) => 
-                            `**${key === 'commands' ? '🎮 Commands' : '🎵 Songs'} Achievements:**\n` +
+                            `**${key === 'commands' ? 'Commands' : 'Songs'} Achievements:**\n` +
                             `${value.join('\n')}`
                         )
                         .join('\n\n')
@@ -174,16 +174,16 @@ export default class Profile extends Command {
                     month: 'short',
                     day: 'numeric',
                 });
-                musicDesc += `🎵 **Spotify Connected**\n` +
+                musicDesc += `${client.emoji.music} **Spotify Connected**\n` +
                            `${client.emoji.info1} Username: **${spotifyData.username}**\n` +
                            `${client.emoji.info1} Profile: [View Profile](${spotifyData.profileUrl})\n` +
                            `${client.emoji.info1} Linked Since: ${linkedDate}\n\n`;
             } else {
-                musicDesc += `🎵 **Spotify Not Connected**\n` +
-                           `${client.emoji.info1} Link your Spotify: \`${prefix}spotify login <url>\`\n\n`;
+                musicDesc += `${client.emoji.music} **Spotify Not Connected**\n` +
+                           `${client.emoji.info1} Link: \`${prefix}spotify login <url>\`\n\n`;
             }
             
-            musicDesc += `💖 **Liked Songs Library**\n`;
+            musicDesc += `${client.emoji.heart} **Liked Songs**\n`;
             if (likedSongs.length > 0) {
                 musicDesc += `${client.emoji.info1} Total Liked: **${likedSongs.length} songs**\n`;
                 

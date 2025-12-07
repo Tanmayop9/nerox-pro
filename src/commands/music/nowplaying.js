@@ -15,7 +15,7 @@ export default class NowPlaying extends Command {
             
             // Create progress bar (handle live streams with 0 duration)
             const progress = duration > 0 ? Math.round((position / duration) * 20) : 0;
-            const progressBar = track.isStream ? '🔴 LIVE STREAM' : ('▰'.repeat(progress) + '▱'.repeat(20 - progress));
+            const progressBar = track.isStream ? 'LIVE' : ('▰'.repeat(progress) + '▱'.repeat(20 - progress));
 
             await ctx.reply({
                 embeds: [
