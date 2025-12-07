@@ -14,9 +14,4 @@ function runScript(path) {
 
 // Start both scripts
 runScript("./src/index.js");
-runScript("./src/support-manager/index.js");
-
-// Start dashboard if enabled
-if (process.env.ENABLE_DASHBOARD === "true") {
-  runScript("./src/dashboard/index.js");
-}
+runScript("./src/modules/support-system/index.js");
