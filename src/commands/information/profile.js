@@ -94,7 +94,7 @@ export default class Profile extends Command {
                 .join('\n\n'));
             // Overview Page
             const overviewEmbed = client
-                .embed('#1DB954')
+                .embed()
                 .setAuthor({
                     name: `${ctx.author.username}'s Profile`,
                     iconURL: ctx.author.displayAvatarURL(),
@@ -123,7 +123,7 @@ export default class Profile extends Command {
                 .setTimestamp();
             
             const badgesEmbed = client
-                .embed('#FF6B6B')
+                .embed()
                 .setAuthor({
                     name: `${ctx.author.username}'s Badges`,
                     iconURL: ctx.author.displayAvatarURL(),
@@ -143,7 +143,7 @@ export default class Profile extends Command {
                 .setTimestamp();
             
             const achievementsEmbed = client
-                .embed('#4ECDC4')
+                .embed()
                 .setAuthor({
                     name: `${ctx.author.username}'s Achievements`,
                     iconURL: ctx.author.displayAvatarURL(),
@@ -202,7 +202,7 @@ export default class Profile extends Command {
             }
             
             const musicEmbed = client
-                .embed('#9B59B6')
+                .embed()
                 .setAuthor({
                     name: `${ctx.author.username}'s Music`,
                     iconURL: ctx.author.displayAvatarURL(),

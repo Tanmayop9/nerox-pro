@@ -9,7 +9,7 @@ export default class Invite extends Command {
         this.execute = async (client, ctx) => {
             await ctx.reply({
                 embeds: [
-                    client.embed('#2B2D31')
+                    client.embed()
                         .setAuthor({
                             name: `Invite ${client.user.username}`,
                             iconURL: client.user.displayAvatarURL()

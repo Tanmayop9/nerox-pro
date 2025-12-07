@@ -122,7 +122,7 @@ this.db = {
     this.sleep = async (s) => void (await new Promise((resolve) => setTimeout(resolve, s * 1000)));
 
     this.button = () => new ExtendedButtonBuilder();
-    this.embed = (color) => new ExtendedEmbedBuilder(color || "#00ADB5");
+    this.embed = (color) => new ExtendedEmbedBuilder(color || "#000000");
 
     this.formatBytes = (bytes) => {
       const power = Math.floor(Math.log(bytes) / Math.log(1024));

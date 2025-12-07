@@ -52,7 +52,7 @@ export default class Queue extends Command {
 
             const chunked = _.chunk(queueList, 8);
             const pages = chunked.map((chunk, pageIndex) => 
-                client.embed('#FF69B4')
+                client.embed()
                     .setAuthor({
                         name: `🎵 ${client.user.username}'s Queue`,
                         iconURL: client.user.displayAvatarURL()

@@ -19,7 +19,7 @@ export default class NowPlaying extends Command {
 
             await ctx.reply({
                 embeds: [
-                    client.embed('#FF69B4')
+                    client.embed()
                         .setAuthor({
                             name: `🎵 Now Playing`,
                             iconURL: client.user.displayAvatarURL()
