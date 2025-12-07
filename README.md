@@ -97,7 +97,12 @@ The bot now uses a fixed shard count (1) instead of auto-detecting to avoid Disc
 src/
 ├── assets/                # Static resources (emojis, filters)
 ├── bot/                   # Main bot components
-│   ├── commands/          # Command implementations by category
+│   ├── commands/          # Command implementations (5 categories)
+│   │   ├── music/         # Music playback, queue, likes (24 commands)
+│   │   ├── info/          # Bot/server information (6 commands)
+│   │   ├── user/          # User settings & profile (7 commands)
+│   │   ├── admin/         # Admin management (5 commands)
+│   │   └── owner/         # Owner-only tools (7 commands)
 │   ├── events/            # Event handlers (client, player, context)
 │   └── structures/        # Core bot structures (client, manager, etc.)
 ├── lib/                   # Reusable libraries
