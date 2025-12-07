@@ -5,8 +5,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 export const loadEvents = async (client) => {
     let total = 0;
-    for (const folder of await readdir(resolve(__dirname, '../events/'))) {
-        const subFolder = resolve(__dirname, `../events/${folder}`);
+    for (const folder of await readdir(resolve(__dirname, '../../handlers/event-handlers/'))) {
+        const subFolder = resolve(__dirname, `../../handlers/event-handlers/${folder}`);
         for (const file of await readdir(subFolder)) {
             if (!file.endsWith('.js'))
                 continue;

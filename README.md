@@ -53,6 +53,25 @@ The bot now uses a fixed shard count (1) instead of auto-detecting to avoid Disc
 - **User Management**: NoPrefix, Premium, and Blacklist management
 - **Moderation Tools**: Warnings system
 
+## Project Structure
+
+```
+src/
+├── config/
+│   └── resources/         # Bot resources (emojis, filters)
+├── core/
+│   ├── helpers/           # Utility helpers
+│   ├── loaders/           # Module loaders
+│   ├── structures/        # Core classes and structures
+│   ├── types/             # Type definitions
+│   └── utilities/         # Core utilities and functions
+├── handlers/
+│   ├── command-handlers/  # Command implementations
+│   └── event-handlers/    # Event handlers
+└── modules/
+    └── support-system/    # Support manager module
+```
+
 ## Scripts
 
 - `npm start` - Start the bot
