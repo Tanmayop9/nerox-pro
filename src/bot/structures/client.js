@@ -81,8 +81,6 @@ this.db = {
     songsPlayed: josh("stats/songsPlayed"),  
     commandsUsed: josh("stats/commandsUsed"),    
     friends: josh("stats/friends"), // Friends list  
-    linkfireStreaks: josh("stats/linkfireStreaks"), // Stores streak count for each user   
-    lastLinkfire: josh("stats/lastLinkfire"), // Tracks the last Linkfire timestamp   
   },  
   twoFourSeven: josh("twoFourSeven"),
 };
