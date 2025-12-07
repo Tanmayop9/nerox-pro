@@ -5,8 +5,8 @@
  * @returns {Promise<string>} The prefix for the guild
  */
 export const getPrefix = async (client, guildId) => {
-    if (!guildId) return client.prefix;
-    const guildPrefix = await client.db.prefix.get(guildId);
-    return guildPrefix || client.prefix;
+  if (!guildId) return client.prefix;
+  const guildPrefix = await client.db.prefix.get(guildId);
+  return guildPrefix || client.prefix;
 };
 /**@codeStyle - https://google.github.io/styleguide/tsguide.html */
