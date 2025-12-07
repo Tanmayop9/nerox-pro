@@ -17,7 +17,7 @@ export default {
         // Command categories
         const categories = {
             general: {
-                emoji: client.emoji.info,
+                emoji: client.emoji.info1,
                 name: 'General',
                 commands: [
                     { name: 'shelp', desc: 'Help menu' },
@@ -112,7 +112,8 @@ export default {
                 {
                     label: 'Home',
                     value: 'home',
-                    description: 'Main menu'
+                    description: 'Main menu',
+                    emoji: client.emoji.info
                 },
                 ...Object.entries(categories).map(([key, cat]) => ({
                     label: cat.name,

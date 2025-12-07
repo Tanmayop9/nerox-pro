@@ -155,7 +155,7 @@ export default class Profile extends Command {
                     `╚══════════════════════════════╝\n\n` +
                     Object.entries(achievements)
                         .map(([key, value]) => 
-                            `**${key === 'commands' ? 'Commands' : 'Songs'} Achievements:**\n` +
+                            `**${key === 'commands' ? `${client.emoji.check} Commands` : `${client.emoji.music} Songs`} Achievements:**\n` +
                             `${value.join('\n')}`
                         )
                         .join('\n\n')
