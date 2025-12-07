@@ -1,4 +1,4 @@
-/** 
+/**
  * @nerox v1.0.0
  * @author Tanmay
  * @copyright 2024 NeroX - Services
@@ -14,10 +14,8 @@ export default class Ping extends Command {
   }
 
   execute = async (client, ctx) => {
-    const msg = await ctx.reply({ 
-      embeds: [
-        client.desc(`Checking latency...`)
-      ]
+    const msg = await ctx.reply({
+      embeds: [client.desc(`Checking latency...`)],
     });
 
     const start = performance.now();
@@ -29,19 +27,20 @@ export default class Ping extends Command {
     const wsLatency = client.ws.ping.toFixed(2);
     const msgLatency = msg.createdTimestamp - ctx.createdTimestamp;
 
-    const embed = client.embed()
+    const embed = client
+      .embed()
       .setAuthor({
         name: `${client.user.username} - Latency`,
-        iconURL: client.user.displayAvatarURL()
+        iconURL: client.user.displayAvatarURL(),
       })
       .desc(
         `**WebSocket:** ${wsLatency}ms\n` +
-        `**Database:** ${dbLatency}ms\n` +
-        `**Message:** ${msgLatency}ms`
+          `**Database:** ${dbLatency}ms\n` +
+          `**Message:** ${msgLatency}ms`,
       )
-      .footer({ 
+      .footer({
         text: `Requested by ${ctx.author.username}`,
-        iconURL: ctx.author.displayAvatarURL()
+        iconURL: ctx.author.displayAvatarURL(),
       });
 
     await msg.edit({ content: null, embeds: [embed] });
