@@ -462,7 +462,9 @@ try {
         console.log('\n╔═══════════════════════════════════════════════════════╗');
         console.log('║          🎛️  NEROX DASHBOARD ONLINE 🎛️               ║');
         console.log('╠═══════════════════════════════════════════════════════╣');
-        console.log(`║  URL: http://${DASHBOARD_HOST}:${DASHBOARD_PORT}${' '.repeat(45 - (DASHBOARD_HOST + ':' + DASHBOARD_PORT).length)}║`);
+        const urlStr = `http://${DASHBOARD_HOST}:${DASHBOARD_PORT}`;
+        const urlPadding = Math.max(0, 48 - urlStr.length);
+        console.log(`║  URL: ${urlStr}${' '.repeat(urlPadding)}║`);
         console.log(`║  Admin Username: ${ADMIN_USERNAME.padEnd(36)}║`);
         console.log(`║  Admin Password: ${ADMIN_PASSWORD.padEnd(36)}║`);
         console.log('║  Status: Ready & Listening ✅                        ║');
