@@ -35,68 +35,42 @@ npm start
 
 The bot uses environment variables for configuration. All sensitive data like tokens and webhook URLs should be stored in the `.env` file and never committed to version control.
 
+### Lavalink Configuration
+
+The bot uses multiple Lavalink nodes for music playback with automatic fallback. Configuration is stored in `lava.json`:
+
+```json
+{
+  "nodes": [
+    {
+      "name": "primary-node",
+      "host": "your-lavalink-host",
+      "port": 2333,
+      "password": "your-password",
+      "secure": false,
+      "priority": 1
+    },
+    {
+      "name": "backup-node",
+      "host": "backup-lavalink-host",
+      "port": 443,
+      "password": "backup-password",
+      "secure": true,
+      "priority": 2
+    }
+  ]
+}
+```
+
+**Features:**
+- Multiple Lavalink nodes with priority-based selection
+- Automatic fallback to backup node if primary fails
+- Real-time connection status monitoring
+- Configurable Spotify and Apple Music integration
+
 ### Rate Limit Fix
 
 The bot now uses a fixed shard count (1) instead of auto-detecting to avoid Discord API rate limiting (429 errors). This also reduces the number of clusters to 1 to minimize resource usage.
-
-## Web Dashboard
-
-The bot includes a web dashboard for managing the database through a user-friendly interface. The dashboard runs alongside the bot on the same server.
-
-### Features
-
-- **User Area**: View database contents, search for specific keys
-- **Admin Area**: Full CRUD operations, bulk import/export, clear databases
-
-### Starting the Dashboard
-
-**Option 1: Run separately**
-```bash
-npm run dashboard
-```
-
-**Option 2: Run with the bot**
-Add to your `.env` file:
-```
-ENABLE_DASHBOARD=true
-```
-
-### Dashboard Configuration
-
-The dashboard now uses **hardcoded configuration** instead of environment variables for easier setup!
-
-To change dashboard settings:
-1. Open `src/dashboard/index.js`
-2. Find the `HARDCODED CONFIGURATION` section
-3. Update these values:
-   - `DASHBOARD_PORT` (default: `3001`)
-   - `DASHBOARD_HOST` (default: `0.0.0.0`)
-   - `ADMIN_USERNAME` (default: `admin`)
-   - `ADMIN_PASSWORD` (default: `admin123`)
-   - `IS_PRODUCTION` (default: `false`)
-
-See `src/dashboard/README.md` for detailed configuration instructions.
-
-### Dashboard Routes
-
-| Route | Description | Access |
-|-------|-------------|--------|
-| `/` | User dashboard (auto-open) | Public |
-| `/user` | User dashboard | Public |
-| `/user/view/:database` | View database (read-only) | Public |
-| `/user/search` | Search in databases | Public |
-| `/admin/login` | Admin login page | Public |
-| `/admin` | Admin dashboard | Admin only |
-| `/admin/database/:database` | Manage database (CRUD) | Admin only |
-| `/admin/bulk` | Bulk operations (import/export/clear) | Admin only |
-
-### Admin Credentials
-
-⚠️ **Change these in production!**
-
-- **Admin**: `admin` / `admin123`
-
-**Note**: User area is publicly accessible without login. Only admin functions require authentication.
 
 ## Features
 
@@ -104,6 +78,11 @@ See `src/dashboard/README.md` for detailed configuration instructions.
 - **Like Button**: Like your favorite songs while they're playing! Liked songs are saved to your profile.
 - **Interactive Controls**: Previous, Pause/Resume, Next, Stop, Autoplay, and Like buttons
 - **Beautiful Now Playing Cards**: Spotify-style cards showing track information
+- **Custom Search Engine (Premium)**: Premium users can set their preferred music search engine (YouTube, YouTube Music, Spotify, SoundCloud, Apple Music, Deezer)
+
+### Premium Features
+- **Custom Search Engine**: Choose your preferred music provider for all searches
+- **Exclusive Access**: Priority support and features
 
 ### Support Manager Bot
 - **Enhanced Error Messages**: Clear, helpful error messages with better formatting
@@ -112,10 +91,33 @@ See `src/dashboard/README.md` for detailed configuration instructions.
 - **User Management**: NoPrefix, Premium, and Blacklist management
 - **Moderation Tools**: Warnings system
 
+## Project Structure
+
+```
+src/
+├── assets/                # Static resources (emojis, filters)
+├── bot/                   # Main bot components
+│   ├── commands/          # Command implementations (5 categories)
+│   │   ├── music/         # Music playback, queue, likes (24 commands)
+│   │   ├── info/          # Bot/server information (6 commands)
+│   │   ├── user/          # User settings & profile (7 commands)
+│   │   ├── admin/         # Admin management (5 commands)
+│   │   └── owner/         # Owner-only tools (7 commands)
+│   ├── events/            # Event handlers (client, player, context)
+│   └── structures/        # Core bot structures (client, manager, etc.)
+├── lib/                   # Reusable libraries
+│   ├── services/          # Business logic services
+│   └── utils/             # Utility functions
+├── plugins/               # Modular plugins (support system, etc.)
+├── system/                # System-level components
+│   ├── loaders/           # Dynamic module loaders
+│   └── types/             # Type definitions
+└── [index.js, nerox.js, logger.js]  # Entry points
+```
+
 ## Scripts
 
-- `npm start` - Start the bot (and dashboard if enabled)
-- `npm run dashboard` - Start the Web Dashboard only
+- `npm start` - Start the bot
 - `npm run support` - Start the Support Manager Bot only
 - `npm run build` - Build TypeScript files
 - `npm run lint` - Run ESLint
