@@ -94,7 +94,7 @@ export async function endGiveaway(client, giveawayId, overrideGiveawayObj = null
         }
         // Winner content + embed
         const winnerContent = `**Congratulations** ${winners.map(id => `<@${id}>`).join(', ')}! You won ${prizeInfo.name}.`;
-        const rewardEmbed = client.embed('#2F3136')
+        const rewardEmbed = client.embed()
             .setAuthor({
                 name: 'Rewards I\'ve given you', iconURL: client.user.displayAvatarURL()
             })
@@ -105,7 +105,7 @@ export async function endGiveaway(client, giveawayId, overrideGiveawayObj = null
             await channel.send({ content: winnerContent, embeds: [rewardEmbed] });
         }
 
-        const endedEmbed = client.embed('#2F3136')
+        const endedEmbed = client.embed()
             .setAuthor({ name: 'GIVEAWAY ENDED', iconURL: client.user.displayAvatarURL() })
             .setDescription(
                 `**Prize:** ${prizeInfo.name}\n` +

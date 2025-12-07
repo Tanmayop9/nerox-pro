@@ -2,28 +2,23 @@
 export const generatePlayEmbed = (client, player) => {
     const track = player.queue.current;
     if (!track)
-        return client.embed().desc('Lavalink could not provide track details.');
+        return client.embed().desc(`${client.emoji.error} No track details`);
     
     const { title, author } = track;
-    const duration = track.isStream ? `LIVE STREAM` : client.formatDuration(track.length || 369);
+    const duration = track.isStream ? `LIVE` : client.formatDuration(track.length || 369);
+    const displayTitle = title.length > 45 ? title.substring(0, 42) + '...' : title;
     
     const embed = client
-        .embed('#FF69B4')
-        .setAuthor({ 
-            name: `${client.emoji.music || '🎵'} Now Playing`,
-            iconURL: client.user.displayAvatarURL()
-        })
-        .title(title.length > 50 ? title.substring(0, 50) + '...' : title)
+        .embed()
         .desc(
-            `**Artist:** ${author}\n` +
-            `**Duration:** ${duration}\n` +
-            `**Requested by:** ${track.requester.displayName}`
-        )
-        .footer({
-            text: `Queue: ${player.queue.size} track${player.queue.size !== 1 ? 's' : ''} • Volume: ${player.volume}%`,
-            iconURL: track.requester.displayAvatarURL()
-        })
-        .setTimestamp();
+            `**${displayTitle}**\n` +
+            `${author}\n\n` +
+            `\`\`\`\n` +
+            `Duration: ${duration}\n` +
+            `Queue: ${player.queue.size} tracks\n` +
+            `Volume: ${player.volume}%\n` +
+            `\`\`\``
+        );
     
     return embed;
 };

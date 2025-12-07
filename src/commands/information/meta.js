@@ -15,9 +15,8 @@ export default class CodeStats extends Command {
 		this.description = 'View full details about the bot\'s codebase.';
 		this.execute = async (client, ctx) => {
 			const msg = await ctx.reply({
-				embeds: [client.embed('#FF69B4')
-					.setTitle('Collecting Statistics...')
-					.desc(`${client.emoji.info} Analyzing codebase structure\n${client.emoji.info} Scanning files and directories\n${client.emoji.info} Counting lines of code`)
+				embeds: [client.embed()
+					.desc(`${client.emoji.loading} Analyzing codebase...`)
 				],
 			});
 
@@ -38,36 +37,16 @@ export default class CodeStats extends Command {
 			];
 
 			const embeds = [
-				client.embed('#FF69B4')
-					.setAuthor({ 
-						name: `${client.user.username} - Codebase Statistics`,
-						iconURL: client.user.displayAvatarURL()
-					})
-					.setThumbnail(client.user.displayAvatarURL())
+				client.embed()
 					.desc(info.join('\n'))
-					.footer({ 
-						text: `Page 1/${Math.ceil(stats.tree.length / 20) + 1} • Developed by NeroX Studios`,
-						iconURL: ctx.author.displayAvatarURL()
-					})
-					.setTimestamp()
 			];
 
 			const treeChunks = _.chunk(stats.tree, 20);
 			let pageNum = 2;
 			for (const chunk of treeChunks) {
 				embeds.push(
-					client.embed('#FF69B4')
-						.setAuthor({ 
-							name: `${client.user.username} - Directory Tree`,
-							iconURL: client.user.displayAvatarURL()
-						})
-						.setTitle('Project Structure')
+					client.embed()
 						.desc(`\`\`\`bash\n${chunk.join('\n')}\n\`\`\``)
-						.footer({ 
-							text: `Page ${pageNum}/${treeChunks.length + 1} • Directory Tree`,
-							iconURL: ctx.author.displayAvatarURL()
-						})
-						.setTimestamp()
 				);
 				pageNum++;
 			}

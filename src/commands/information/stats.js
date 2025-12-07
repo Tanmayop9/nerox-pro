@@ -24,7 +24,7 @@ export default class Stats extends Command {
         const activePlayers = client.manager?.players?.size || 0;
         const shardCount = client.options.shardCount || 1;
 
-        const generalStatsEmbed = client.embed('#00ADB5')
+        const generalStatsEmbed = client.embed()
             .setAuthor({
                 name: `${client.user.username} Statistics`,
                 iconURL: client.user.displayAvatarURL(),
@@ -58,7 +58,7 @@ export default class Stats extends Command {
             })
         );
 
-        const shardInfoEmbed = client.embed('#00ADB5')
+        const shardInfoEmbed = client.embed()
             .setAuthor({
                 name: `${client.user.username} Shard Info`,
                 iconURL: client.user.displayAvatarURL(),
@@ -81,7 +81,7 @@ export default class Stats extends Command {
             })
             .setTimestamp();
 
-        const systemInfoEmbed = client.embed('#00ADB5')
+        const systemInfoEmbed = client.embed()
             .setAuthor({
                 name: `${client.user.username} System Info`,
                 iconURL: client.user.displayAvatarURL(),

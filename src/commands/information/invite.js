@@ -9,25 +9,24 @@ export default class Invite extends Command {
         this.execute = async (client, ctx) => {
             await ctx.reply({
                 embeds: [
-                    client.embed('#2B2D31')
+                    client.embed()
                         .setAuthor({
                             name: `Invite ${client.user.username}`,
                             iconURL: client.user.displayAvatarURL()
                         })
+                        .setThumbnail(client.user.displayAvatarURL())
                         .desc(
-                            `Add me to your server using one of the links below.\n\n` +
-                            `**Recommended:** Basic permissions required for music playback.\n` +
-                            `**Administrator:** Full permissions for all features.`
+                            `\`\`\`\n` +
+                            `Add me to your server\n` +
+                            `\`\`\`\n` +
+                            `**Basic** • Music permissions\n` +
+                            `**Admin** • All features`
                         )
-                        .footer({ 
-                            text: `${client.guilds.cache.size} servers`,
-                            iconURL: ctx.author.displayAvatarURL()
-                        })
                 ],
                 components: [
                     new ActionRowBuilder().addComponents([
-                        client.button().link('Invite (Basic)', client.invite.required()),
-                        client.button().link('Invite (Admin)', client.invite.admin()),
+                        client.button().link('Basic', client.invite.required()),
+                        client.button().link('Admin', client.invite.admin()),
                     ]),
                 ],
             });

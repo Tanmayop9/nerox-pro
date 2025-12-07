@@ -28,21 +28,18 @@ export default class Help extends Command {
 
 		const totalCommands = client.commands.filter(cmd => !['owner', 'mod', 'debug'].includes(cmd.category)).size;
 
-		const embed = client.embed('#2B2D31')
-			.setAuthor({ 
-				name: `${client.user.username} - Help`,
+		const embed = client.embed()
+			.setAuthor({
+				name: client.user.username,
 				iconURL: client.user.displayAvatarURL()
 			})
 			.desc(
-				`Prefix: \`${client.prefix}\`\n` +
-				`Commands: \`${totalCommands}\` across \`${categories.length}\` categories\n\n` +
-				`Use \`${client.prefix}<command> -guide\` for command details\n` +
-				`\`<>\` = required | \`[]\` = optional`
-			)
-			.footer({ 
-				text: `${client.guilds.cache.size} servers`,
-				iconURL: ctx.author.displayAvatarURL()
-			});
+				`\`\`\`\n` +
+				`Prefix: ${client.prefix}\n` +
+				`Commands: ${totalCommands}\n` +
+				`\`\`\`\n` +
+				`\`<>\` required • \`[]\` optional`
+			);
 
 		const menu = new StringSelectMenuBuilder()
 			.setCustomId('menu')
@@ -86,44 +83,36 @@ export default class Help extends Command {
 					break;
 
 				case 'all':
-					const allEmbed = client.embed('#2B2D31')
-						.setAuthor({ 
-							name: `${client.user.username} - All Commands`,
+					const allEmbed = client.embed()
+						.setAuthor({
+							name: client.user.username,
 							iconURL: client.user.displayAvatarURL()
 						})
 						.desc(
 							Object.entries(allCommands)
 								.sort((a, b) => a[0].localeCompare(b[0]))
 								.map(([cat, cmds]) =>
-									`**${cat.charAt(0).toUpperCase() + cat.slice(1)}** (${cmds.length})\n` +
-									`${cmds.map(cmd => `\`${cmd.name}\``).join(' ')}`
+									`**${cat.charAt(0).toUpperCase() + cat.slice(1)}**\n` +
+									`${cmds.map(cmd => `\`${cmd.name}\``).join(' • ')}`
 								).join('\n\n')
-						)
-						.footer({ 
-							text: `Total: ${totalCommands} commands`,
-							iconURL: ctx.author.displayAvatarURL()
-						});
+						);
 					await reply.edit({ embeds: [allEmbed] });
 					break;
 
 				default:
 					const selectedCommands = allCommands[selected] || [];
-					const categoryEmbed = client.embed('#2B2D31')
-						.setAuthor({ 
-							name: `${client.user.username} - ${selected.charAt(0).toUpperCase() + selected.slice(1)}`,
+					const categoryEmbed = client.embed()
+						.setAuthor({
+							name: `${selected.charAt(0).toUpperCase() + selected.slice(1)}`,
 							iconURL: client.user.displayAvatarURL()
 						})
 						.desc(
 							selectedCommands.length
 								? selectedCommands.map(cmd =>
-									`\`${client.prefix}${cmd.name}\` - ${cmd.description}`
-								  ).join('\n')
-								: 'No commands available'
-						)
-						.footer({ 
-							text: `${selectedCommands.length} commands`,
-							iconURL: ctx.author.displayAvatarURL()
-						});
+									`${client.emoji.info1} \`${client.prefix}${cmd.name}\`\n└ ${cmd.description}`
+								  ).join('\n\n')
+								: 'No commands'
+						);
 
 					await reply.edit({ embeds: [categoryEmbed] });
 					break;

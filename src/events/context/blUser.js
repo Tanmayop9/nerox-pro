@@ -10,18 +10,16 @@ export default class BlacklistUser {
             const replyObject = {
                 embeds: [
                     client
-                        .embed('#FF1493')
-                        .desc(`**Listen up ${ctx.author},**\n\n` +
-                        `${client.emoji.bl} You’ve been flagged and blacklisted by my anti-spam system.\n` +
-                        `${client.emoji.info} Don’t even bother, but if you wanna beg for mercy, open a ticket @ my **[\`Support Server\`](${client.config.links.support})**.`),
+                        .embed()
+                        .desc(`${client.emoji.bl} Blacklisted for spam\n\n` +
+                        `${client.emoji.info} **[\`Support\`](${client.config.links.support})**`),
                 ],
                 components: [
-                    new ActionRowBuilder().addComponents(client.button().link('Support Server', client.config.links.support)),
+                    new ActionRowBuilder().addComponents(client.button().link('Support', client.config.links.support)),
                 ],
             };
             await ctx.react(client.emoji.bl, {
-                content: 'You’ve been flagged and blacklisted by my anti-spam system!!!\n' +
-                    'Check your DMs.',
+                content: 'Blacklisted - Check DMs',
             });
             await ctx.author.send(replyObject).catch(() => null);
             await client.webhooks.blLogs.send({
@@ -30,10 +28,10 @@ export default class BlacklistUser {
                 embeds: [
                     client
                         .embed()
-                        .desc(`${client.emoji.bl} A poor soul got blacklisted (${moment().tz('Asia/Kolkata')})\n\n` +
-                        `${client.emoji.info} **User :** ${ctx.author.tag} \`[${ctx.author.id}]\`\n` +
-                        `${client.emoji.info} **Guild :** ${ctx.guild.name.substring(0, 20)} \`[${ctx.guild.id}]\`\n` +
-                        `${client.emoji.info} **Channel :** ${ctx.channel.name} \`[${ctx.channel.id}]\``),
+                        .desc(`${client.emoji.bl} Blacklisted\n\n` +
+                        `${client.emoji.info} User: ${ctx.author.tag}\n` +
+                        `${client.emoji.info} Guild: ${ctx.guild.name.substring(0, 20)}\n` +
+                        `${client.emoji.info} Channel: ${ctx.channel.name}`),
                 ],
             });
         };

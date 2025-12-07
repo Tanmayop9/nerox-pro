@@ -188,7 +188,7 @@ function formatMs(ms) {
 
 function createLavalinkEmbed(client, stats) {
     if (!stats) {
-        return client.embed('#FF6B6B')
+        return client.embed()
             .setAuthor({
                 name: 'Lavalink Stats',
                 iconURL: client.user.displayAvatarURL()

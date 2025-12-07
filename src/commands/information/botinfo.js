@@ -25,52 +25,47 @@ export default class BotInfo extends Command {
 		const activePlayers = client.manager?.players?.size || 0;
 		const shardCount = client.options.shardCount || 1;
 
-		const embed = client.embed('#FF69B4')
+		const embed = client.embed()
 			.setAuthor({
-				name: `✨ ${client.user.username} Info`,
+				name: client.user.username,
 				iconURL: client.user.displayAvatarURL()
 			})
 			.setThumbnail(client.user.displayAvatarURL())
 			.desc(
-				`Hey there! I'm **${client.user.username}**, your friendly music companion! 🎵\n\n` +
-				`Currently, I'm vibing in **${totalGuilds.toLocaleString()} servers** with ` +
-				`**${totalUsers.toLocaleString()} amazing users**! I've been running smoothly on ` +
-				`**${shardCount} shard${shardCount > 1 ? 's' : ''}** and right now I have ` +
-				`**${activePlayers} active player${activePlayers !== 1 ? 's' : ''}** jamming to music! 🎧\n\n` +
-				`My heart has been beating for **${uptime}** and I'm feeling great with a ` +
-				`latency of just **${ping}ms**! ${ping < 100 ? '💚' : ping < 200 ? '💛' : '❤️'}`
-			)
-			.footer({ text: '💖 Made with love by NeroX Studios', iconURL: ctx.author.displayAvatarURL() })
-			.setTimestamp();
+				`\`\`\`yml\n` +
+				`Servers: ${totalGuilds.toLocaleString()}\n` +
+				`Users: ${totalUsers.toLocaleString()}\n` +
+				`Shards: ${shardCount}\n` +
+				`Players: ${activePlayers}\n` +
+				`Uptime: ${uptime}\n` +
+				`Ping: ${ping}ms\n` +
+				`\`\`\``
+			);
 
 		const menu = new StringSelectMenuBuilder()
 			.setCustomId('botinfo')
-			.setPlaceholder('🌸 Pick a section to explore!')
+			.setPlaceholder('Select section')
 			.setMaxValues(1)
 			.addOptions([
 				{
 					label: 'Overview',
 					value: 'overview',
-					description: 'See the big picture!',
-					emoji: '🏠',
+					description: 'Main info',
 				},
 				{
 					label: 'System',
 					value: 'system',
-					description: 'Technical stuff!',
-					emoji: '⚙️',
+					description: 'Technical info',
 				},
 				{
 					label: 'Developer',
 					value: 'developer',
-					description: 'Meet the creators!',
-					emoji: '👨‍💻',
+					description: 'Creator info',
 				},
 				{
 					label: 'Stats',
 					value: 'stats',
-					description: 'Numbers & metrics!',
-					emoji: '📊',
+					description: 'Statistics',
 				},
 			]);
 
@@ -91,76 +86,72 @@ export default class BotInfo extends Command {
 			let updatedEmbed;
 
 			if (choice === 'overview') {
-				updatedEmbed = client.embed('#FF69B4')
+				updatedEmbed = client.embed()
 					.setAuthor({
-						name: `🏠 ${client.user.username} Overview`,
+						name: 'Overview',
 						iconURL: client.user.displayAvatarURL()
 					})
 					.setThumbnail(client.user.displayAvatarURL())
 					.desc(
-						`Hey there! I'm **${client.user.username}**, your friendly music companion! 🎵\n\n` +
-						`Currently, I'm vibing in **${totalGuilds.toLocaleString()} servers** with ` +
-						`**${totalUsers.toLocaleString()} amazing users**! I've been running smoothly on ` +
-						`**${shardCount} shard${shardCount > 1 ? 's' : ''}** and right now I have ` +
-						`**${activePlayers} active player${activePlayers !== 1 ? 's' : ''}** jamming to music! 🎧\n\n` +
-						`My heart has been beating for **${uptime}** and I'm feeling great with a ` +
-						`latency of just **${ping}ms**! ${ping < 100 ? '💚' : ping < 200 ? '💛' : '❤️'}\n\n` +
-						`You can use my prefix \`${client.prefix}\` to command me, and I have ` +
-						`**${totalChannels.toLocaleString()} channels** in my cache ready to serve! 💫`
-					)
-					.footer({ text: '💖 Made with love by NeroX Studios' })
-					.setTimestamp();
+						`\`\`\`yml\n` +
+						`Servers: ${totalGuilds.toLocaleString()}\n` +
+						`Users: ${totalUsers.toLocaleString()}\n` +
+						`Shards: ${shardCount}\n` +
+						`Players: ${activePlayers}\n` +
+						`Uptime: ${uptime}\n` +
+						`Ping: ${ping}ms\n` +
+						`Prefix: ${client.prefix}\n` +
+						`Channels: ${totalChannels.toLocaleString()}\n` +
+						`\`\`\``
+					);
 			} else if (choice === 'system') {
-				updatedEmbed = client.embed('#FF69B4')
+				updatedEmbed = client.embed()
 					.setAuthor({
-						name: `⚙️ System Blueprint`,
+						name: 'System',
 						iconURL: client.user.displayAvatarURL()
 					})
 					.setThumbnail(client.user.displayAvatarURL())
 					.desc(
-						`Here's a peek under my hood! 🔧\n\n` +
-						`I'm powered by a **${cpuModel}** processor and currently using ` +
-						`**${memoryUsage} MB** of memory to keep all your favorite tunes running! 💾\n\n` +
-						`I'm running on **${platform}** with **${architecture}** architecture, ` +
-						`powered by **Node.js ${nodeVersion}**. Everything is optimized to ` +
-						`give you the smoothest music experience possible! ✨`
-					)
-					.footer({ text: '🔧 System specs for the tech-curious!' })
-					.setTimestamp();
+						`\`\`\`yml\n` +
+						`CPU: ${cpuModel.substring(0, 40)}\n` +
+						`Memory: ${memoryUsage} MB\n` +
+						`Platform: ${platform}\n` +
+						`Architecture: ${architecture}\n` +
+						`Node.js: ${nodeVersion}\n` +
+						`\`\`\``
+					);
 			} else if (choice === 'developer') {
-				updatedEmbed = client.embed('#FF69B4')
+				updatedEmbed = client.embed()
 					.setAuthor({
-						name: `👨‍💻 Crafted With Love`,
+						name: 'Developer',
 						iconURL: client.user.displayAvatarURL()
 					})
 					.setThumbnail(client.user.displayAvatarURL())
 					.desc(
-						`I was lovingly crafted by the amazing team at **NeroX Studios**! 💕\n\n` +
-						`I'm currently at **version 1.0.0**, built using the powerful **Discord.js v14** ` +
-						`framework with a reliable **MongoDB** database keeping all your preferences safe! 🗃️\n\n` +
-						`Need help or want to hang out? Join our cozy ` +
-						`**[Support Server](https://discord.gg/duM4dkbz9N)** where our friendly ` +
-						`team is always ready to help! We'd love to have you there~ 🌸`
-					)
-					.footer({ text: '💝 Thank you for using me!' })
-					.setTimestamp();
+						`\`\`\`yml\n` +
+						`Team: NeroX Studios\n` +
+						`Version: 1.0.0\n` +
+						`Framework: Discord.js v14\n` +
+						`Database: MongoDB\n` +
+						`\`\`\`\n` +
+						`**[Support Server](https://discord.gg/duM4dkbz9N)**`
+					);
 			} else if (choice === 'stats') {
-				updatedEmbed = client.embed('#FF69B4')
+				updatedEmbed = client.embed()
 					.setAuthor({
-						name: `📊 Performance Metrics`,
+						name: 'Statistics',
 						iconURL: client.user.displayAvatarURL()
 					})
 					.setThumbnail(client.user.displayAvatarURL())
 					.desc(
-						`Let's talk numbers! 📈\n\n` +
-						`I have **${commandsCount} commands** loaded and ready to serve you! ` +
-						`Currently operating on **Shard 0/${shardCount}** with a sweet latency of ` +
-						`**${ping}ms**! ${ping < 100 ? '(That\'s super fast! 🚀)' : ping < 200 ? '(Pretty good! ⚡)' : '(Working hard! 💪)'}\n\n` +
-						`My cache is holding **${client.users.cache.size} users** and I'm actively ` +
-						`playing music in **${activePlayers} server${activePlayers !== 1 ? 's' : ''}** right now! 🎶`
-					)
-					.footer({ text: '📊 Stats updated in real-time!' })
-					.setTimestamp();
+						`\`\`\`yml\n` +
+						`Commands: ${commandsCount}\n` +
+						`Shard: 0/${shardCount}\n` +
+						`Latency: ${ping}ms\n` +
+						`Cache: ${client.users.cache.size} users\n` +
+						`Active: ${activePlayers} players\n` +
+						`\`\`\``
+					);
 			}
 
 			await msg.edit({ embeds: [updatedEmbed] });

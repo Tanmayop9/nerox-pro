@@ -66,18 +66,18 @@ class SupportManager extends Client {
         this.owners = process.env.OWNER_IDS?.split(',') || [];
 
         this.colors = {
-            primary: '#FF69B4',
-            success: '#00FF7F',
-            error: '#FF6B6B',
-            warning: '#FFD93D',
-            info: '#6C63FF',
+            primary: '#000000',
+            success: '#000000',
+            error: '#000000',
+            warning: '#000000',
+            info: '#000000',
         };
 
         // Use emojis from main bot for consistency
         this.emoji = emoji;
     }
 
-    embed(color = this.colors.primary) {
+    embed(color = '#000000') {
         return new EmbedBuilder().setColor(color);
     }
 

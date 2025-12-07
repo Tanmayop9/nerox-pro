@@ -41,18 +41,8 @@ const checkPremiumExpiries = async (client) => {
             if (user) {
                 user.send({
                     embeds: [
-                        client.embed('#FF6B6B')
-                            .title('Premium Expired')
-                            .desc(`Your **Nerox Premium** has expired.\n\nTo renew, click the button below or join our [Support Server](${SUPPORT_SERVER})`)
-                            .footer({ text: 'Nerox Premium | Expired' })
-                    ],
-                    components: [
-                        {
-                            type: 1,
-                            components: [
-                                client.button().link('Renew Premium', SUPPORT_SERVER)
-                            ]
-                        }
+                        client.embed()
+                            .desc(`${client.emoji.warning} Premium expired\n\n${client.emoji.info} **[Renew](${SUPPORT_SERVER})**`)
                     ]
                 }).catch(() => null);
             }
@@ -104,7 +94,7 @@ const checkNoPrefixExpiries = async (client) => {
             if (user) {
                 user.send({
                     embeds: [
-                        client.embed('#FF6B6B')
+                        client.embed()
                             .title('No Prefix Expired')
                             .desc(`Your **No Prefix** access has expired.\n\nYou will now need to use the prefix \`${client.prefix}\` before commands.\n\nTo renew, join our [Support Server](${SUPPORT_SERVER})`)
                             .footer({ text: 'Nerox No Prefix | Expired' })

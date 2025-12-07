@@ -18,18 +18,17 @@ export default class Queue extends Command {
             const totalDuration = upcoming.reduce((acc, t) => acc + (t.length || 0), 0) + (current?.length || 0);
             const totalTracks = previous.length + 1 + upcoming.length;
 
-            // Format queue items with cute styling
             const formatTrack = (track, index, isCurrent = false, isPrevious = false) => {
-                const duration = track.isStream ? '🔴 LIVE' : client.formatDuration(track.length);
-                const title = track.title.length > 35 ? track.title.substring(0, 32) + '...' : track.title;
+                const duration = track.isStream ? 'LIVE' : client.formatDuration(track.length);
+                const title = track.title.length > 38 ? track.title.substring(0, 35) + '...' : track.title;
                 
                 if (isCurrent) {
-                    return `**▶️ ${index}. ${title}**\n└ \`${duration}\` • *Now Playing* 🎵`;
+                    return `${client.emoji.resume} **${index + 1}. ${title}**\n\`${duration}\``;
                 }
                 if (isPrevious) {
-                    return `~~${index}. ${title}~~\n└ \`${duration}\` • *Already played* ✨`;
+                    return `~~${index + 1}. ${title}~~\n\`${duration}\``;
                 }
-                return `${index}. ${title}\n└ \`${duration}\` • *Up next* 🎶`;
+                return `${client.emoji.info1} ${index + 1}. ${title}\n\`${duration}\``;
             };
 
             // Build queue list
@@ -50,25 +49,21 @@ export default class Queue extends Command {
                 queueList.push(formatTrack(track, previous.length + 1 + i));
             });
 
-            const chunked = _.chunk(queueList, 8);
+            const chunked = _.chunk(queueList, 10);
             const pages = chunked.map((chunk, pageIndex) => 
-                client.embed('#FF69B4')
+                client.embed()
                     .setAuthor({
-                        name: `🎵 ${client.user.username}'s Queue`,
+                        name: 'Queue',
                         iconURL: client.user.displayAvatarURL()
                     })
                     .setThumbnail(current?.thumbnail || client.user.displayAvatarURL())
                     .desc(
-                        `Here's what's playing and coming up! 💕\n\n` +
-                        `Currently in the queue: **${totalTracks} track${totalTracks !== 1 ? 's' : ''}** ` +
-                        `with a total duration of **${client.formatDuration(totalDuration)}**! 🎧\n\n` +
-                        chunk.join('\n\n')
+                        `\`${totalTracks} tracks\` • \`${client.formatDuration(totalDuration)}\`\n\n` +
+                        chunk.join('\n') +
+                        `\n\n\`\`\`\n` +
+                        `Loop: ${player.loop || 'Off'} • Volume: ${player.volume}%\n` +
+                        `\`\`\``
                     )
-                    .footer({
-                        text: `💖 Page ${pageIndex + 1}/${chunked.length} • Loop: ${player.loop || 'Off'} • Volume: ${player.volume}%`,
-                        iconURL: ctx.author.displayAvatarURL()
-                    })
-                    .setTimestamp()
             );
 
             await paginator(ctx, pages, Math.floor(previous.length / 8) || 0);

@@ -14,11 +14,9 @@ export default class GuildDelete {
                 ?.send({
                 embeds: [
                     client
-                        .embed('#FF69B4')
-                        .title(`Oops! ${client.user.username} was removed!`)
-                        .desc(`${client.emoji.warn} ${client.user} was just removed from \`${guild.name}\`.\n\n` +
-                        `${client.emoji.info} Sorry for all and any of the bad experience/(s) you had with me!\n\n` +
-                        `${client.emoji.info} Please leave a feedback or report any issues you had at my **[\`Support Server\`](${client.config.links.support})** so that it can be fixed / worked on as soon as possible.`),
+                        .embed()
+                        .desc(`${client.emoji.warn} Removed from \`${guild.name}\`\n\n` +
+                        `${client.emoji.info} **[\`Support\`](${client.config.links.support})**`),
                 ],
                 components: [
                     new ActionRowBuilder().addComponents(client.button().link('Support Server', `${client.config.links.support}`), client.button().link('Add me back', `${client.invite.required()}`)),
@@ -30,12 +28,11 @@ export default class GuildDelete {
                 avatarURL: `${client.user?.displayAvatarURL()}`,
                 embeds: [
                     client
-                        .embed('#FF69B4')
-                        .desc(`${client.emoji.warn} **Left a guild (${moment().tz('Asia/Kolkata')})**\n\n` +
-                        `**${guild.name}**\n\n` +
-                        `${client.emoji.info} **Membercount :** ${guild.memberCount}\n` +
-                        `${client.emoji.info} **GuildId :** ${guild.id}\n` +
-                        `${client.emoji.info} **Owner :** ${owner?.displayName} \`[${guild.ownerId}]\`\n`),
+                        .embed()
+                        .desc(`${client.emoji.warn} **Left ${guild.name}**\n\n` +
+                        `${client.emoji.info} Members: ${guild.memberCount}\n` +
+                        `${client.emoji.info} ID: ${guild.id}\n` +
+                        `${client.emoji.info} Owner: ${owner?.displayName}`),
                 ],
             });
         };

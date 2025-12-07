@@ -15,30 +15,25 @@ export default class NowPlaying extends Command {
             
             // Create progress bar (handle live streams with 0 duration)
             const progress = duration > 0 ? Math.round((position / duration) * 20) : 0;
-            const progressBar = track.isStream ? '🔴 LIVE STREAM' : ('▰'.repeat(progress) + '▱'.repeat(20 - progress));
+            const progressBar = track.isStream ? 'LIVE' : ('▰'.repeat(progress) + '▱'.repeat(20 - progress));
 
+            const displayTitle = track.title.length > 50 ? track.title.substring(0, 47) + '...' : track.title;
+            
             await ctx.reply({
                 embeds: [
-                    client.embed('#FF69B4')
+                    client.embed()
                         .setAuthor({
-                            name: `🎵 Now Playing`,
+                            name: 'Now Playing',
                             iconURL: client.user.displayAvatarURL()
                         })
                         .setThumbnail(track.thumbnail || client.user.displayAvatarURL())
                         .desc(
-                            `Currently vibing to this amazing track! 💕\n\n` +
-                            `**${track.title}**\n` +
-                            `by *${track.author}*\n\n` +
+                            `**${displayTitle}**\n` +
+                            `${track.author}\n\n` +
                             `${progressBar}\n` +
-                            `\`${client.formatDuration(position)}\` / \`${track.isStream ? '🔴 LIVE' : client.formatDuration(duration)}\`\n\n` +
-                            `${track.isStream ? '🔴 This is a live stream - enjoy the endless vibes!' : 
-                                duration > 0 ? `🎧 ${Math.round((duration - position) / 1000 / 60)} minutes of music left to enjoy!` : '🎧 Enjoying the music!'}`
+                            `\`${client.formatDuration(position)}\` / \`${track.isStream ? 'LIVE' : client.formatDuration(duration)}\`\n\n` +
+                            `Requested by ${track.requester.displayName}`
                         )
-                        .footer({
-                            text: `💖 Requested by ${track.requester.displayName}`,
-                            iconURL: track.requester.displayAvatarURL?.() || ctx.author.displayAvatarURL()
-                        })
-                        .setTimestamp()
                 ],
             });
         };

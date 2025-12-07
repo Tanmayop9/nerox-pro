@@ -29,7 +29,7 @@ export default class Ping extends Command {
     const wsLatency = client.ws.ping.toFixed(2);
     const msgLatency = msg.createdTimestamp - ctx.createdTimestamp;
 
-    const embed = client.embed('#2B2D31')
+    const embed = client.embed()
       .setAuthor({
         name: `${client.user.username} - Latency`,
         iconURL: client.user.displayAvatarURL()
