@@ -78,6 +78,11 @@ The bot now uses a fixed shard count (1) instead of auto-detecting to avoid Disc
 - **Like Button**: Like your favorite songs while they're playing! Liked songs are saved to your profile.
 - **Interactive Controls**: Previous, Pause/Resume, Next, Stop, Autoplay, and Like buttons
 - **Beautiful Now Playing Cards**: Spotify-style cards showing track information
+- **Custom Search Engine (Premium)**: Premium users can set their preferred music search engine (YouTube, YouTube Music, Spotify, SoundCloud, Apple Music, Deezer)
+
+### Premium Features
+- **Custom Search Engine**: Choose your preferred music provider for all searches
+- **Exclusive Access**: Priority support and features
 
 ### Support Manager Bot
 - **Enhanced Error Messages**: Clear, helpful error messages with better formatting

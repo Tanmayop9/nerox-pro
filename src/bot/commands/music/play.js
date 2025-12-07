@@ -31,6 +31,10 @@ export default class Play extends Command {
                     shardId: ctx.guild.shardId,
                     voiceId: ctx.member.voice.channel.id,
                 }));
+            // Get user's preferred search engine (premium feature)
+            const userPrefs = await client.db.userPreferences.get(ctx.author.id) || {};
+            const searchEngine = userPrefs.searchEngine || 'youtube';
+            
             const waitEmbed = await ctx.reply({
                 embeds: [
                     client
@@ -40,6 +44,7 @@ export default class Play extends Command {
             });
             const result = await player.search(args.join(' '), {
                 requester: ctx.author,
+                engine: searchEngine,
             });
             if (!result.tracks.length) {
                 await waitEmbed.edit({

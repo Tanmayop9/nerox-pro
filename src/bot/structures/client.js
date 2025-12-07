@@ -75,6 +75,7 @@ this.db = {
   afk: josh("afk"), // AFK status
   spotify: josh("spotify"), // Spotify user data
   likedSongs: josh("likedSongs"), // User liked songs
+  userPreferences: josh("userPreferences"), // User preferences (search engine, etc.)
   
   stats: {
     songsPlayed: josh("stats/songsPlayed"),  
