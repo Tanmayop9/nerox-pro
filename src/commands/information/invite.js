@@ -10,10 +10,17 @@ export default class Invite extends Command {
             await ctx.reply({
                 embeds: [
                     client.embed()
+                        .setAuthor({
+                            name: `Invite ${client.user.username}`,
+                            iconURL: client.user.displayAvatarURL()
+                        })
+                        .setThumbnail(client.user.displayAvatarURL())
                         .desc(
-                            `${client.emoji.info} Invite ${client.user.username}\n\n` +
-                            `Basic: Music permissions\n` +
-                            `Admin: All features`
+                            `\`\`\`\n` +
+                            `Add me to your server\n` +
+                            `\`\`\`\n` +
+                            `**Basic** • Music permissions\n` +
+                            `**Admin** • All features`
                         )
                 ],
                 components: [

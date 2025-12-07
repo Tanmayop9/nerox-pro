@@ -26,13 +26,20 @@ export default class BotInfo extends Command {
 		const shardCount = client.options.shardCount || 1;
 
 		const embed = client.embed()
+			.setAuthor({
+				name: client.user.username,
+				iconURL: client.user.displayAvatarURL()
+			})
+			.setThumbnail(client.user.displayAvatarURL())
 			.desc(
-				`${client.emoji.info} Servers: **${totalGuilds.toLocaleString()}**\n` +
-				`${client.emoji.info} Users: **${totalUsers.toLocaleString()}**\n` +
-				`${client.emoji.info} Shards: **${shardCount}**\n` +
-				`${client.emoji.info} Players: **${activePlayers}**\n` +
-				`${client.emoji.info} Uptime: **${uptime}**\n` +
-				`${client.emoji.info} Ping: **${ping}ms**`
+				`\`\`\`yml\n` +
+				`Servers: ${totalGuilds.toLocaleString()}\n` +
+				`Users: ${totalUsers.toLocaleString()}\n` +
+				`Shards: ${shardCount}\n` +
+				`Players: ${activePlayers}\n` +
+				`Uptime: ${uptime}\n` +
+				`Ping: ${ping}ms\n` +
+				`\`\`\``
 			);
 
 		const menu = new StringSelectMenuBuilder()
@@ -80,42 +87,70 @@ export default class BotInfo extends Command {
 
 			if (choice === 'overview') {
 				updatedEmbed = client.embed()
+					.setAuthor({
+						name: 'Overview',
+						iconURL: client.user.displayAvatarURL()
+					})
+					.setThumbnail(client.user.displayAvatarURL())
 					.desc(
-						`${client.emoji.info} Servers: **${totalGuilds.toLocaleString()}**\n` +
-						`${client.emoji.info} Users: **${totalUsers.toLocaleString()}**\n` +
-						`${client.emoji.info} Shards: **${shardCount}**\n` +
-						`${client.emoji.info} Players: **${activePlayers}**\n` +
-						`${client.emoji.info} Uptime: **${uptime}**\n` +
-						`${client.emoji.info} Ping: **${ping}ms**\n` +
-						`${client.emoji.info} Prefix: \`${client.prefix}\`\n` +
-						`${client.emoji.info} Channels: **${totalChannels.toLocaleString()}**`
+						`\`\`\`yml\n` +
+						`Servers: ${totalGuilds.toLocaleString()}\n` +
+						`Users: ${totalUsers.toLocaleString()}\n` +
+						`Shards: ${shardCount}\n` +
+						`Players: ${activePlayers}\n` +
+						`Uptime: ${uptime}\n` +
+						`Ping: ${ping}ms\n` +
+						`Prefix: ${client.prefix}\n` +
+						`Channels: ${totalChannels.toLocaleString()}\n` +
+						`\`\`\``
 					);
 			} else if (choice === 'system') {
 				updatedEmbed = client.embed()
+					.setAuthor({
+						name: 'System',
+						iconURL: client.user.displayAvatarURL()
+					})
+					.setThumbnail(client.user.displayAvatarURL())
 					.desc(
-						`${client.emoji.info} CPU: **${cpuModel}**\n` +
-						`${client.emoji.info} Memory: **${memoryUsage} MB**\n` +
-						`${client.emoji.info} Platform: **${platform}**\n` +
-						`${client.emoji.info} Architecture: **${architecture}**\n` +
-						`${client.emoji.info} Node.js: **${nodeVersion}**`
+						`\`\`\`yml\n` +
+						`CPU: ${cpuModel.substring(0, 40)}\n` +
+						`Memory: ${memoryUsage} MB\n` +
+						`Platform: ${platform}\n` +
+						`Architecture: ${architecture}\n` +
+						`Node.js: ${nodeVersion}\n` +
+						`\`\`\``
 					);
 			} else if (choice === 'developer') {
 				updatedEmbed = client.embed()
+					.setAuthor({
+						name: 'Developer',
+						iconURL: client.user.displayAvatarURL()
+					})
+					.setThumbnail(client.user.displayAvatarURL())
 					.desc(
-						`${client.emoji.info} Team: **NeroX Studios**\n` +
-						`${client.emoji.info} Version: **1.0.0**\n` +
-						`${client.emoji.info} Framework: **Discord.js v14**\n` +
-						`${client.emoji.info} Database: **MongoDB**\n` +
-						`${client.emoji.info} **[Support](https://discord.gg/duM4dkbz9N)**`
+						`\`\`\`yml\n` +
+						`Team: NeroX Studios\n` +
+						`Version: 1.0.0\n` +
+						`Framework: Discord.js v14\n` +
+						`Database: MongoDB\n` +
+						`\`\`\`\n` +
+						`**[Support Server](https://discord.gg/duM4dkbz9N)**`
 					);
 			} else if (choice === 'stats') {
 				updatedEmbed = client.embed()
+					.setAuthor({
+						name: 'Statistics',
+						iconURL: client.user.displayAvatarURL()
+					})
+					.setThumbnail(client.user.displayAvatarURL())
 					.desc(
-						`${client.emoji.info} Commands: **${commandsCount}**\n` +
-						`${client.emoji.info} Shard: **0/${shardCount}**\n` +
-						`${client.emoji.info} Latency: **${ping}ms**\n` +
-						`${client.emoji.info} Cache: **${client.users.cache.size}** users\n` +
-						`${client.emoji.info} Active: **${activePlayers}** players`
+						`\`\`\`yml\n` +
+						`Commands: ${commandsCount}\n` +
+						`Shard: 0/${shardCount}\n` +
+						`Latency: ${ping}ms\n` +
+						`Cache: ${client.users.cache.size} users\n` +
+						`Active: ${activePlayers} players\n` +
+						`\`\`\``
 					);
 			}
 

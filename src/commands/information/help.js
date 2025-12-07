@@ -29,10 +29,16 @@ export default class Help extends Command {
 		const totalCommands = client.commands.filter(cmd => !['owner', 'mod', 'debug'].includes(cmd.category)).size;
 
 		const embed = client.embed()
+			.setAuthor({
+				name: client.user.username,
+				iconURL: client.user.displayAvatarURL()
+			})
 			.desc(
-				`${client.emoji.info} Prefix: \`${client.prefix}\`\n` +
-				`${client.emoji.info} Commands: \`${totalCommands}\`\n\n` +
-				`\`<>\` = required | \`[]\` = optional`
+				`\`\`\`\n` +
+				`Prefix: ${client.prefix}\n` +
+				`Commands: ${totalCommands}\n` +
+				`\`\`\`\n` +
+				`\`<>\` required • \`[]\` optional`
 			);
 
 		const menu = new StringSelectMenuBuilder()
@@ -78,12 +84,16 @@ export default class Help extends Command {
 
 				case 'all':
 					const allEmbed = client.embed()
+						.setAuthor({
+							name: client.user.username,
+							iconURL: client.user.displayAvatarURL()
+						})
 						.desc(
 							Object.entries(allCommands)
 								.sort((a, b) => a[0].localeCompare(b[0]))
 								.map(([cat, cmds]) =>
 									`**${cat.charAt(0).toUpperCase() + cat.slice(1)}**\n` +
-									`${cmds.map(cmd => `\`${cmd.name}\``).join(' ')}`
+									`${cmds.map(cmd => `\`${cmd.name}\``).join(' • ')}`
 								).join('\n\n')
 						);
 					await reply.edit({ embeds: [allEmbed] });
@@ -92,11 +102,15 @@ export default class Help extends Command {
 				default:
 					const selectedCommands = allCommands[selected] || [];
 					const categoryEmbed = client.embed()
+						.setAuthor({
+							name: `${selected.charAt(0).toUpperCase() + selected.slice(1)}`,
+							iconURL: client.user.displayAvatarURL()
+						})
 						.desc(
 							selectedCommands.length
 								? selectedCommands.map(cmd =>
-									`\`${client.prefix}${cmd.name}\` - ${cmd.description}`
-								  ).join('\n')
+									`${client.emoji.info1} \`${client.prefix}${cmd.name}\`\n└ ${cmd.description}`
+								  ).join('\n\n')
 								: 'No commands'
 						);
 

@@ -20,15 +20,15 @@ export default class Queue extends Command {
 
             const formatTrack = (track, index, isCurrent = false, isPrevious = false) => {
                 const duration = track.isStream ? 'LIVE' : client.formatDuration(track.length);
-                const title = track.title.length > 35 ? track.title.substring(0, 32) + '...' : track.title;
+                const title = track.title.length > 38 ? track.title.substring(0, 35) + '...' : track.title;
                 
                 if (isCurrent) {
-                    return `**${client.emoji.resume} ${index}. ${title}**\n\`${duration}\` - Playing`;
+                    return `${client.emoji.resume} **${index + 1}. ${title}**\n\`${duration}\``;
                 }
                 if (isPrevious) {
-                    return `~~${index}. ${title}~~\n\`${duration}\``;
+                    return `~~${index + 1}. ${title}~~\n\`${duration}\``;
                 }
-                return `${index}. ${title}\n\`${duration}\``;
+                return `${client.emoji.info1} ${index + 1}. ${title}\n\`${duration}\``;
             };
 
             // Build queue list
@@ -49,14 +49,20 @@ export default class Queue extends Command {
                 queueList.push(formatTrack(track, previous.length + 1 + i));
             });
 
-            const chunked = _.chunk(queueList, 8);
+            const chunked = _.chunk(queueList, 10);
             const pages = chunked.map((chunk, pageIndex) => 
                 client.embed()
+                    .setAuthor({
+                        name: 'Queue',
+                        iconURL: client.user.displayAvatarURL()
+                    })
                     .setThumbnail(current?.thumbnail || client.user.displayAvatarURL())
                     .desc(
-                        `${client.emoji.queue} **Queue** - ${totalTracks} tracks - ${client.formatDuration(totalDuration)}\n\n` +
-                        chunk.join('\n\n') +
-                        `\n\nLoop: ${player.loop || 'Off'} • Volume: ${player.volume}%`
+                        `\`${totalTracks} tracks\` • \`${client.formatDuration(totalDuration)}\`\n\n` +
+                        chunk.join('\n') +
+                        `\n\n\`\`\`\n` +
+                        `Loop: ${player.loop || 'Off'} • Volume: ${player.volume}%\n` +
+                        `\`\`\``
                     )
             );
 

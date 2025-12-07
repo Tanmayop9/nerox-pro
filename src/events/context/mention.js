@@ -15,8 +15,16 @@ export default class Mention {
                 embeds: [
                     client
                         .embed()
-                        .desc(`${client.emoji.info} Prefix: \`${prefix}\`\n` +
-                        `${client.emoji.info} Use \`${prefix}help\``),
+                        .setAuthor({
+                            name: client.user.username,
+                            iconURL: client.user.displayAvatarURL()
+                        })
+                        .desc(
+                            `\`\`\`\n` +
+                            `Prefix: ${prefix}\n` +
+                            `\`\`\`\n` +
+                            `Type \`${prefix}help\` to get started`
+                        ),
                 ],
             });
         };

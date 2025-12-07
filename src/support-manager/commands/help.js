@@ -84,12 +84,17 @@ export default {
 
         const generateMainEmbed = () => {
             return client.embed()
+                .setAuthor({
+                    name: client.user.username,
+                    iconURL: client.user.displayAvatarURL()
+                })
                 .setDescription(
-                    `**${client.user.username}**\n\n` +
-                    `Prefix: \`${client.prefix}\`\n` +
-                    `Commands: ${Object.values(categories).reduce((acc, cat) => acc + cat.commands.length, 0)}\n\n` +
+                    `\`\`\`\n` +
+                    `Prefix: ${client.prefix}\n` +
+                    `Commands: ${Object.values(categories).reduce((acc, cat) => acc + cat.commands.length, 0)}\n` +
+                    `\`\`\`\n` +
                     Object.entries(categories).map(([key, cat]) => 
-                        `${cat.emoji} ${cat.name}`
+                        `${cat.emoji} **${cat.name}**`
                     ).join('\n')
                 );
         };
@@ -97,11 +102,14 @@ export default {
         const generateCategoryEmbed = (categoryKey) => {
             const cat = categories[categoryKey];
             return client.embed()
+                .setAuthor({
+                    name: cat.name,
+                    iconURL: client.user.displayAvatarURL()
+                })
                 .setDescription(
-                    `${cat.emoji} **${cat.name}**\n\n` +
                     cat.commands.map(cmd => 
-                        `\`${client.prefix}${cmd.name}\` - ${cmd.desc}`
-                    ).join('\n')
+                        `${client.emoji.info1} \`${client.prefix}${cmd.name}\`\n└ ${cmd.desc}`
+                    ).join('\n\n')
                 );
         };
 

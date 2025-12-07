@@ -6,14 +6,18 @@ export const generatePlayEmbed = (client, player) => {
     
     const { title, author } = track;
     const duration = track.isStream ? `LIVE` : client.formatDuration(track.length || 369);
+    const displayTitle = title.length > 45 ? title.substring(0, 42) + '...' : title;
     
     const embed = client
         .embed()
         .desc(
-            `${client.emoji.music} **${title.length > 50 ? title.substring(0, 50) + '...' : title}**\n\n` +
-            `${client.emoji.info} ${author}\n` +
-            `${client.emoji.timer} ${duration}\n\n` +
-            `Queue: ${player.queue.size} • Vol: ${player.volume}%`
+            `**${displayTitle}**\n` +
+            `${author}\n\n` +
+            `\`\`\`\n` +
+            `Duration: ${duration}\n` +
+            `Queue: ${player.queue.size} tracks\n` +
+            `Volume: ${player.volume}%\n` +
+            `\`\`\``
         );
     
     return embed;

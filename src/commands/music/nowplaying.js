@@ -17,15 +17,22 @@ export default class NowPlaying extends Command {
             const progress = duration > 0 ? Math.round((position / duration) * 20) : 0;
             const progressBar = track.isStream ? 'LIVE' : ('▰'.repeat(progress) + '▱'.repeat(20 - progress));
 
+            const displayTitle = track.title.length > 50 ? track.title.substring(0, 47) + '...' : track.title;
+            
             await ctx.reply({
                 embeds: [
                     client.embed()
+                        .setAuthor({
+                            name: 'Now Playing',
+                            iconURL: client.user.displayAvatarURL()
+                        })
                         .setThumbnail(track.thumbnail || client.user.displayAvatarURL())
                         .desc(
-                            `${client.emoji.music} **${track.title}**\n` +
-                            `${client.emoji.info} ${track.author}\n\n` +
+                            `**${displayTitle}**\n` +
+                            `${track.author}\n\n` +
                             `${progressBar}\n` +
-                            `\`${client.formatDuration(position)}\` / \`${track.isStream ? 'LIVE' : client.formatDuration(duration)}\``
+                            `\`${client.formatDuration(position)}\` / \`${track.isStream ? 'LIVE' : client.formatDuration(duration)}\`\n\n` +
+                            `Requested by ${track.requester.displayName}`
                         )
                 ],
             });
