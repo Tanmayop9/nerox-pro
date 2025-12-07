@@ -61,15 +61,21 @@ Add to your `.env` file:
 ENABLE_DASHBOARD=true
 ```
 
-### Environment Variables for Dashboard
+### Dashboard Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ENABLE_DASHBOARD` | Enable dashboard when starting with `npm start` | `false` |
-| `DASHBOARD_PORT` | Port for the dashboard | `3001` |
-| `DASHBOARD_HOST` | Host to bind to | `0.0.0.0` |
-| `DASHBOARD_ADMIN_USER` | Admin username | `admin` |
-| `DASHBOARD_ADMIN_PASS` | Admin password | `admin123` |
+The dashboard now uses **hardcoded configuration** instead of environment variables for easier setup!
+
+To change dashboard settings:
+1. Open `src/dashboard/index.js`
+2. Find the `HARDCODED CONFIGURATION` section
+3. Update these values:
+   - `DASHBOARD_PORT` (default: `3001`)
+   - `DASHBOARD_HOST` (default: `0.0.0.0`)
+   - `ADMIN_USERNAME` (default: `admin`)
+   - `ADMIN_PASSWORD` (default: `admin123`)
+   - `IS_PRODUCTION` (default: `false`)
+
+See `src/dashboard/README.md` for detailed configuration instructions.
 
 ### Dashboard Routes
 
@@ -92,10 +98,25 @@ ENABLE_DASHBOARD=true
 
 **Note**: User area is publicly accessible without login. Only admin functions require authentication.
 
+## Features
+
+### Music Player
+- **Like Button**: Like your favorite songs while they're playing! Liked songs are saved to your profile.
+- **Interactive Controls**: Previous, Pause/Resume, Next, Stop, Autoplay, and Like buttons
+- **Beautiful Now Playing Cards**: Spotify-style cards showing track information
+
+### Support Manager Bot
+- **Enhanced Error Messages**: Clear, helpful error messages with better formatting
+- **Ticket System**: Complete support ticket management
+- **Giveaway System**: Create and manage giveaways
+- **User Management**: NoPrefix, Premium, and Blacklist management
+- **Moderation Tools**: Warnings system
+
 ## Scripts
 
 - `npm start` - Start the bot (and dashboard if enabled)
 - `npm run dashboard` - Start the Web Dashboard only
+- `npm run support` - Start the Support Manager Bot only
 - `npm run build` - Build TypeScript files
 - `npm run lint` - Run ESLint
 - `npm run format` - Format code with Prettier
