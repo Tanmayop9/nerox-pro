@@ -115,16 +115,8 @@ export default {
 async function checkNodeStatus(node) {
   try {
     const protocol = node.secure ? "https" : "http";
-    const url = `${protocol}://${node.host}:${node.port}/version`;
-
-    const response = await axios.get(url, {
-      timeout: 5000,
-      headers: {
-        Authorization: node.password,
-      },
-    });
-
-    // Try to get stats endpoint
+    
+    // Try to get stats endpoint first for comprehensive status
     let stats = null;
     try {
       const statsUrl = `${protocol}://${node.host}:${node.port}/v4/stats`;
@@ -136,12 +128,31 @@ async function checkNodeStatus(node) {
       });
       stats = statsResponse.data;
     } catch (e) {
-      // Stats endpoint might not be available, that's okay
+      // If v4 stats fails, try the info endpoint
+      try {
+        const infoUrl = `${protocol}://${node.host}:${node.port}/v4/info`;
+        const infoResponse = await axios.get(infoUrl, {
+          timeout: 5000,
+          headers: {
+            Authorization: node.password,
+          },
+        });
+        // Info endpoint exists but no stats available
+        stats = null;
+      } catch (infoError) {
+        // Try fallback to version endpoint for basic connectivity
+        const versionUrl = `${protocol}://${node.host}:${node.port}/version`;
+        await axios.get(versionUrl, {
+          timeout: 5000,
+          headers: {
+            Authorization: node.password,
+          },
+        });
+      }
     }
 
     return {
       online: true,
-      version: response.data,
       stats: stats,
     };
   } catch (error) {
