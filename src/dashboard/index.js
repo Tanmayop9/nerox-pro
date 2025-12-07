@@ -4,33 +4,48 @@
  */
 
 // Check for dependencies before starting
+console.log('[Dashboard] Checking dependencies...');
 try {
     await import('express');
-    await import('dotenv');
-    await import('ejs');
+    console.log('[Dashboard] ✓ express found');
 } catch (error) {
-    console.error('❌ Missing dependencies. Please run: npm install');
+    console.error('❌ Missing express. Please run: npm install');
     console.error('   Error:', error.message);
     process.exit(1);
 }
 
-import express from 'express';
-import { config as loadEnv } from 'dotenv';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-import { josh } from '../functions/josh.js';
+let express, fileURLToPath, dirname, join, josh;
 
-loadEnv();
+try {
+    const expressModule = await import('express');
+    express = expressModule.default;
+    
+    const urlModule = await import('node:url');
+    fileURLToPath = urlModule.fileURLToPath;
+    
+    const pathModule = await import('node:path');
+    dirname = pathModule.dirname;
+    join = pathModule.join;
+    
+    const joshModule = await import('../functions/josh.js');
+    josh = joshModule.josh;
+    
+    console.log('[Dashboard] ✓ All dependencies loaded');
+} catch (error) {
+    console.error('❌ Failed to load dependencies:', error.message);
+    process.exit(1);
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 
-// Configuration
-const DASHBOARD_PORT = process.env.DASHBOARD_PORT || 3001;
-const DASHBOARD_HOST = process.env.DASHBOARD_HOST || '0.0.0.0';
-const ADMIN_USERNAME = process.env.DASHBOARD_ADMIN_USER || 'admin';
-const ADMIN_PASSWORD = process.env.DASHBOARD_ADMIN_PASS || 'admin123';
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+// ============== HARDCODED CONFIGURATION ==============
+// Change these values as needed
+const DASHBOARD_PORT = 3001;
+const DASHBOARD_HOST = '0.0.0.0';
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = 'admin123';
+const IS_PRODUCTION = false;
 
 // Cookie options - secure in production
 const getCookieOptions = (sessionId, isDelete = false) => {
@@ -57,10 +72,15 @@ app.set('views', join(__dirname, 'views'));
 const databases = {};
 
 const getDatabase = (name) => {
-    if (!databases[name]) {
-        databases[name] = josh(name);
+    try {
+        if (!databases[name]) {
+            databases[name] = josh(name);
+        }
+        return databases[name];
+    } catch (error) {
+        console.error(`[Dashboard] Error accessing database '${name}':`, error.message);
+        throw new Error(`Database '${name}' is not accessible: ${error.message}`);
     }
-    return databases[name];
 };
 
 // Available databases
@@ -125,6 +145,16 @@ const checkAdmin = (req, res, next) => {
 
 // Routes
 
+// Health check
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        timestamp: Date.now(),
+        uptime: process.uptime(),
+        message: 'Dashboard is running'
+    });
+});
+
 // Home page - redirects to user dashboard (no login required)
 app.get('/', (req, res) => {
     res.redirect('/user');
@@ -165,28 +195,35 @@ app.get('/logout', (req, res) => {
 app.get('/user', checkAdmin, async (req, res) => {
     try {
         // Get some stats for display
-        const noPrefixDb = getDatabase('noPrefix');
-        const blacklistDb = getDatabase('blacklist');
+        let stats = {
+            noPrefix: 0,
+            blacklist: 0
+        };
         
-        const noPrefixCount = await noPrefixDb.size;
-        const blacklistCount = await blacklistDb.size;
+        try {
+            const noPrefixDb = getDatabase('noPrefix');
+            const blacklistDb = getDatabase('blacklist');
+            
+            stats.noPrefix = await noPrefixDb.size;
+            stats.blacklist = await blacklistDb.size;
+        } catch (dbError) {
+            console.error('[Dashboard] Error fetching stats:', dbError.message);
+        }
         
         res.render('user/dashboard', {
             title: 'User Dashboard',
             username: req.session.username,
             role: req.session.role,
             isAdmin: req.isAdmin,
-            stats: {
-                noPrefix: noPrefixCount,
-                blacklist: blacklistCount
-            }
+            stats
         });
     } catch (error) {
-        res.render('error', { 
+        console.error('[Dashboard] Error in /user route:', error);
+        res.status(500).render('error', { 
             title: 'Error',
             message: error.message,
-            role: req.session.role,
-            isAdmin: req.isAdmin
+            role: req.session?.role || 'user',
+            isAdmin: req.isAdmin || false
         });
     }
 });
@@ -413,11 +450,34 @@ app.get('/api/database/:database/:key', checkAdmin, async (req, res) => {
     }
 });
 
-// Start server
-app.listen(DASHBOARD_PORT, DASHBOARD_HOST, () => {
-    console.log(`[Dashboard] Running on http://${DASHBOARD_HOST}:${DASHBOARD_PORT}`);
-    console.log(`[Dashboard] Admin login: ${ADMIN_USERNAME}`);
-    console.log(`[Dashboard] Using local database`);
+// Error handler
+app.use((err, req, res, next) => {
+    console.error('[Dashboard] Error:', err);
+    res.status(500).send('Internal Server Error: ' + err.message);
 });
+
+// Start server
+try {
+    app.listen(DASHBOARD_PORT, DASHBOARD_HOST, () => {
+        console.log('\n╔═══════════════════════════════════════════════════════╗');
+        console.log('║          🎛️  NEROX DASHBOARD ONLINE 🎛️               ║');
+        console.log('╠═══════════════════════════════════════════════════════╣');
+        console.log(`║  URL: http://${DASHBOARD_HOST}:${DASHBOARD_PORT}${' '.repeat(45 - (DASHBOARD_HOST + ':' + DASHBOARD_PORT).length)}║`);
+        console.log(`║  Admin Username: ${ADMIN_USERNAME.padEnd(36)}║`);
+        console.log(`║  Admin Password: ${ADMIN_PASSWORD.padEnd(36)}║`);
+        console.log('║  Status: Ready & Listening ✅                        ║');
+        console.log('╚═══════════════════════════════════════════════════════╝\n');
+        console.log('[Dashboard] Public routes:');
+        console.log('  • http://localhost:' + DASHBOARD_PORT + '/ (User Dashboard)');
+        console.log('  • http://localhost:' + DASHBOARD_PORT + '/user/search (Database Search)');
+        console.log('\n[Dashboard] Admin routes:');
+        console.log('  • http://localhost:' + DASHBOARD_PORT + '/admin/login (Admin Login)');
+        console.log('  • http://localhost:' + DASHBOARD_PORT + '/admin (Admin Dashboard)');
+        console.log('\n[Dashboard] Using local database\n');
+    });
+} catch (error) {
+    console.error('❌ Failed to start dashboard server:', error.message);
+    process.exit(1);
+}
 
 export default app;
