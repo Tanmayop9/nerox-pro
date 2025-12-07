@@ -27,7 +27,9 @@ export default {
             return message.reply({
                 embeds: [
                     client.embed(client.colors.error)
-                        .setDescription(`${client.emoji.cross} This command is only for bot owners! 💔`)
+                        .setTitle(`${client.emoji.cross} Access Denied`)
+                        .setDescription(`This command is restricted to bot owners only.\n\n**Need Help?** Contact the bot developer for assistance.`)
+                        .setFooter({ text: `Requested by ${message.author.tag}` })
                 ]
             });
         }
@@ -37,7 +39,9 @@ export default {
             return message.reply({
                 embeds: [
                     client.embed(client.colors.error)
-                        .setDescription(`${client.emoji.cross} This command can only be used in the support server! 🏠`)
+                        .setTitle(`${client.emoji.cross} Wrong Server`)
+                        .setDescription(`This command can only be used in the official support server.\n\n**Support Server:** Join our support server to use this command!`)
+                        .setFooter({ text: `Requested by ${message.author.tag}` })
                 ]
             });
         }
@@ -59,7 +63,9 @@ export default {
                 return message.reply({
                     embeds: [
                         client.embed(client.colors.warning)
-                            .setDescription(`${client.emoji.warn} Please wait **${timeLeft.toFixed(1)}s** before using this command again! ⏰`)
+                            .setTitle(`${client.emoji.warn} Slow Down!`)
+                            .setDescription(`You're using commands too quickly!\n\n**Wait Time:** ${timeLeft.toFixed(1)} seconds\n**Tip:** Take your time to avoid cooldowns! ⏰`)
+                            .setFooter({ text: `Command: ${command.name}` })
                     ]
                 });
             }
@@ -76,8 +82,14 @@ export default {
             await message.reply({
                 embeds: [
                     client.embed(client.colors.error)
-                        .setDescription(`${client.emoji.cross} Oops! Something went wrong... 💔\n\`\`\`${error.message}\`\`\``)
+                        .setTitle(`${client.emoji.cross} Command Error`)
+                        .setDescription(`Oops! Something went wrong while executing this command.\n\n**Error:** \`${error.message}\`\n\n**Need Help?** Contact support if this persists.`)
+                        .setFooter({ text: `Command: ${command.name}` })
+                        .setTimestamp()
                 ]
+            }).catch(() => {
+                // Fallback: send a simple message if embed fails
+                message.reply(`${client.emoji.cross} An error occurred: ${error.message}`).catch(() => {});
             });
         }
     }

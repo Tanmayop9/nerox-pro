@@ -16,12 +16,17 @@ export default {
     name: 'ready',
     once: true,
     async execute(client) {
-        console.log(`\n═══════════════════════════════════════════`);
-        console.log(`   ${client.user.tag} is now online!`);
-        console.log(`   Support Guild: ${client.supportGuild || 'Not configured'}`);
-        console.log(`   Watching ${client.guilds.cache.size} server(s)`);
-        console.log(`   Commands loaded: ${client.commands.size}`);
-        console.log(`═══════════════════════════════════════════\n`);
+        console.log(`\n╔═══════════════════════════════════════════════════════╗`);
+        console.log(`║          🤖 SUPPORT MANAGER BOT ONLINE 🤖            ║`);
+        console.log(`╠═══════════════════════════════════════════════════════╣`);
+        console.log(`║  Bot Tag: ${client.user.tag.padEnd(43)}║`);
+        console.log(`║  Bot ID: ${client.user.id.padEnd(44)}║`);
+        console.log(`║  Support Guild: ${(client.supportGuild || 'Not configured').padEnd(36)}║`);
+        console.log(`║  Prefix: ${client.prefix.padEnd(46)}║`);
+        console.log(`║  Servers: ${String(client.guilds.cache.size).padEnd(45)}║`);
+        console.log(`║  Commands: ${String(client.commands.size).padEnd(44)}║`);
+        console.log(`║  Status: Ready & Listening ✅                        ║`);
+        console.log(`╚═══════════════════════════════════════════════════════╝\n`);
 
         // Set bot status
         client.user.setPresence({

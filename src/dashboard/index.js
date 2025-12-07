@@ -3,6 +3,17 @@
  * Web interface for managing the bot database
  */
 
+// Check for dependencies before starting
+try {
+    await import('express');
+    await import('dotenv');
+    await import('ejs');
+} catch (error) {
+    console.error('❌ Missing dependencies. Please run: npm install');
+    console.error('   Error:', error.message);
+    process.exit(1);
+}
+
 import express from 'express';
 import { config as loadEnv } from 'dotenv';
 import { fileURLToPath } from 'node:url';
