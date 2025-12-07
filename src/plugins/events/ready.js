@@ -4,13 +4,25 @@
  */
 
 import axios from "axios";
+import { readFileSync } from "fs";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
 import { endGiveaway } from "../lib/utils/giveawayUtils.js";
 
-// Lavalink configs
-const LAVALINK_HOST = process.env.LAVALINK_HOST || "98.83.6.213";
-const LAVALINK_PORT = process.env.LAVALINK_PORT || "25570";
-const LAVALINK_PASSWORD = process.env.LAVALINK_PASSWORD || "Atom1";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Lavalink stats channel config
 const LAVALINK_STATS_CHANNEL = process.env.LAVALINK_STATS_CHANNEL || "292929";
+
+// Load Lavalink configuration from lava.json
+let lavaConfig;
+try {
+  const configPath = resolve(__dirname, "../../../lava.json");
+  lavaConfig = JSON.parse(readFileSync(configPath, "utf-8"));
+} catch (error) {
+  console.error("[Lavalink] Failed to load lava.json:", error.message);
+  lavaConfig = { nodes: [] };
+}
 
 export default {
   name: "ready",
@@ -114,16 +126,21 @@ async function sendLavalinkStats(client) {
       return;
     }
 
+    if (!lavaConfig.nodes || lavaConfig.nodes.length === 0) {
+      console.log("[Lavalink] No nodes configured in lava.json");
+      return;
+    }
+
     // Delete old stats messages
     const messages = await channel.messages
       .fetch({ limit: 100 })
       .catch(() => null);
     if (messages) {
       const toDelete = messages.filter((msg) => {
-        if (msg.author.id !== client.user.id) return true;
+        if (msg.author.id !== client.user.id) return false;
         const embed = msg.embeds[0];
         if (!embed) return true;
-        return !embed.author?.name?.includes("Lavalink Stats");
+        return embed.author?.name?.includes("Lavalink Stats");
       });
       if (toDelete.size > 0) {
         await channel.bulkDelete(toDelete, true).catch(async () => {
@@ -136,42 +153,40 @@ async function sendLavalinkStats(client) {
       }
     }
 
-    // Fetch Lavalink stats
-    const lavalinkStats = await fetchLavalinkStats();
-    const statsEmbed = createLavalinkEmbed(client, lavalinkStats);
-
-    // Edit existing stats message, if present
-    const existingStats = messages?.find((msg) => {
-      if (msg.author.id !== client.user.id) return false;
-      const embed = msg.embeds[0];
-      return embed?.author?.name?.includes("Lavalink Stats");
-    });
-    if (existingStats) {
-      await existingStats.edit({ embeds: [statsEmbed] }).catch(() => {
-        channel.send({ embeds: [statsEmbed] });
-      });
-    } else {
-      await channel.send({ embeds: [statsEmbed] });
+    // Fetch stats for all nodes and create embeds
+    const nodeEmbeds = [];
+    for (const node of lavaConfig.nodes) {
+      const stats = await fetchNodeStats(node);
+      const embed = createNodeEmbed(client, node, stats);
+      nodeEmbeds.push(embed);
     }
-    console.log("[Lavalink] Stats updated successfully");
+
+    // Send all embeds in a single message
+    await channel.send({ embeds: nodeEmbeds });
+    console.log(
+      `[Lavalink] Stats updated for ${nodeEmbeds.length} node(s) successfully`,
+    );
   } catch (error) {
     console.error("[Lavalink] Error sending stats:", error);
   }
 }
 
-async function fetchLavalinkStats() {
+async function fetchNodeStats(node) {
   try {
-    const protocol = process.env.LAVALINK_SECURE === "true" ? "https" : "http";
+    const protocol = node.secure ? "https" : "http";
     const response = await axios.get(
-      `${protocol}://${LAVALINK_HOST}:${LAVALINK_PORT}/v4/stats`,
+      `${protocol}://${node.host}:${node.port}/v4/stats`,
       {
-        headers: { Authorization: LAVALINK_PASSWORD },
+        headers: { Authorization: node.password },
         timeout: 5000,
       },
     );
     return response.data;
   } catch (error) {
-    console.error("[Lavalink] Failed to fetch stats:", error.message);
+    console.error(
+      `[Lavalink] Failed to fetch stats for ${node.name}:`,
+      error.message,
+    );
     return null;
   }
 }
@@ -195,17 +210,23 @@ function formatMs(ms) {
   return `${seconds}s`;
 }
 
-function createLavalinkEmbed(client, stats) {
+function createNodeEmbed(client, node, stats) {
+  const statusEmoji = stats ? "🟢" : "🔴";
+  const statusText = stats ? "Online" : "Offline";
+  const embedColor = stats ? client.colors.success : client.colors.error;
+
   if (!stats) {
     return client
-      .embed()
+      .embed(embedColor)
       .setAuthor({
-        name: "Lavalink Stats",
+        name: `Lavalink Stats - ${node.name}`,
         iconURL: client.user.displayAvatarURL(),
       })
       .setDescription(
-        `**Node:** ${LAVALINK_HOST}:${LAVALINK_PORT}\n` +
-          `**Status:** Offline / Unreachable\n\n` +
+        `**Status:** ${statusEmoji} ${statusText}\n` +
+          `**Host:** \`${node.host}:${node.port}\`\n` +
+          `**Secure:** ${node.secure ? "🔒 Yes" : "🔓 No"}\n` +
+          `**Priority:** ${node.priority || 1}\n\n` +
           `Unable to fetch Lavalink statistics.\n` +
           `The node may be down or restarting.\n\n` +
           `*Last checked: <t:${Math.floor(Date.now() / 1000)}:R>*`,
@@ -216,15 +237,17 @@ function createLavalinkEmbed(client, stats) {
 
   const { players, playingPlayers, uptime, memory, cpu, frameStats } = stats;
   return client
-    .embed(client.colors.primary)
+    .embed(embedColor)
     .setAuthor({
-      name: "Lavalink Stats",
+      name: `Lavalink Stats - ${node.name}`,
       iconURL: client.user.displayAvatarURL(),
     })
     .setDescription(
-      `<:neroxinfo:1446475383481303052> **Node Info**\n` +
-        `Host: \`Nerox-Temp\`\n` +
-        `Status: Online\n` +
+      `**Status:** ${statusEmoji} ${statusText}\n` +
+        `**Host:** \`${node.host}:${node.port}\`\n` +
+        `**Secure:** ${node.secure ? "🔒 Yes" : "🔓 No"}\n` +
+        `**Priority:** ${node.priority || 1}\n\n` +
+        `<:neroxinfo:1446475383481303052> **Node Info**\n` +
         `Uptime: ${formatMs(uptime)}\n\n` +
         `<:neroxinfo:1446475383481303052> **Players**\n` +
         `Total: ${players}\n` +
