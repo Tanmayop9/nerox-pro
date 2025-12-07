@@ -14,4 +14,4 @@ function runScript(path) {
 
 // Start both scripts
 runScript("./src/index.js");
-runScript("./src/modules/support-system/index.js");
+runScript("./src/plugins/index.js");

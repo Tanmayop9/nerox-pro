@@ -35,6 +35,39 @@ npm start
 
 The bot uses environment variables for configuration. All sensitive data like tokens and webhook URLs should be stored in the `.env` file and never committed to version control.
 
+### Lavalink Configuration
+
+The bot uses multiple Lavalink nodes for music playback with automatic fallback. Configuration is stored in `lava.json`:
+
+```json
+{
+  "nodes": [
+    {
+      "name": "primary-node",
+      "host": "your-lavalink-host",
+      "port": 2333,
+      "password": "your-password",
+      "secure": false,
+      "priority": 1
+    },
+    {
+      "name": "backup-node",
+      "host": "backup-lavalink-host",
+      "port": 443,
+      "password": "backup-password",
+      "secure": true,
+      "priority": 2
+    }
+  ]
+}
+```
+
+**Features:**
+- Multiple Lavalink nodes with priority-based selection
+- Automatic fallback to backup node if primary fails
+- Real-time connection status monitoring
+- Configurable Spotify and Apple Music integration
+
 ### Rate Limit Fix
 
 The bot now uses a fixed shard count (1) instead of auto-detecting to avoid Discord API rate limiting (429 errors). This also reduces the number of clusters to 1 to minimize resource usage.
@@ -57,19 +90,19 @@ The bot now uses a fixed shard count (1) instead of auto-detecting to avoid Disc
 
 ```
 src/
-├── config/
-│   └── resources/         # Bot resources (emojis, filters)
-├── core/
-│   ├── helpers/           # Utility helpers
-│   ├── loaders/           # Module loaders
-│   ├── structures/        # Core classes and structures
-│   ├── types/             # Type definitions
-│   └── utilities/         # Core utilities and functions
-├── handlers/
-│   ├── command-handlers/  # Command implementations
-│   └── event-handlers/    # Event handlers
-└── modules/
-    └── support-system/    # Support manager module
+├── assets/                # Static resources (emojis, filters)
+├── bot/                   # Main bot components
+│   ├── commands/          # Command implementations by category
+│   ├── events/            # Event handlers (client, player, context)
+│   └── structures/        # Core bot structures (client, manager, etc.)
+├── lib/                   # Reusable libraries
+│   ├── services/          # Business logic services
+│   └── utils/             # Utility functions
+├── plugins/               # Modular plugins (support system, etc.)
+├── system/                # System-level components
+│   ├── loaders/           # Dynamic module loaders
+│   └── types/             # Type definitions
+└── [index.js, nerox.js, logger.js]  # Entry points
 ```
 
 ## Scripts
