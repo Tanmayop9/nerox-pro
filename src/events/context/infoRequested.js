@@ -7,11 +7,10 @@ export default class InfoRequested {
                 embeds: [
                     client
                         .embed()
-                        .desc(`### ${client.emoji.info1} **Information for the command \`${command.name}\`**\n\n` 
-    +
-
-                        `${client.emoji.info} **Desc: **${command.description}\n`  +                   `${client.emoji.info} **Aliases :** \`${`${command.aliases.join(', ')}` || 'No aliases found'}\`\n` +
-                        `${client.emoji.info} **Usage :** ${client.prefix}${command.name} ${command.usage}\n`),
+                        .desc(`${client.emoji.info} \`${command.name}\`\n\n` +
+                        `${command.description}\n` +
+                        `Aliases: \`${command.aliases.join(', ') || 'None'}\`\n` +
+                        `Usage: \`${client.prefix}${command.name} ${command.usage}\``),
                 ],
             });
         };

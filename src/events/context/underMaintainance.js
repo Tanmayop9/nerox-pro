@@ -7,11 +7,8 @@ export default class UnderMaintenance {
                 embeds: [
                     client
                         .embed()
-                        .desc(`**SERVICE TEMPORARILY UNAVAILABLE**\n\n` +
-                            `${client.emoji.cross} The bot is currently undergoing maintenance.\n` +
-                            `${client.emoji.warn} Our engineers are working tirelessly to bring it back.\n\n` +
-                            `${client.emoji.info} For updates, join our **[Support Server](${client.config.links.support})**.\n` +
-                            `${client.emoji.info} We appreciate your patience!`),
+                        .desc(`${client.emoji.warning} **Under Maintenance**\n\n` +
+                            `${client.emoji.info} **[Support](${client.config.links.support})**`),
                 ],
             });
         };

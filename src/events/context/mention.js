@@ -15,10 +15,8 @@ export default class Mention {
                 embeds: [
                     client
                         .embed()
-                        .desc(`Yo ${ctx.author}, welcome to your ultimate bot experience.\n\n` +
-      `My prefix for this server is **\`${prefix}\`** – stay ahead, stay smooth.\n` +
-      `What's the move today? Let's make it iconic.\n\n` +
-      `Hit **\`${prefix}help\`** and let's roll.`),
+                        .desc(`${client.emoji.info} Prefix: \`${prefix}\`\n` +
+                        `${client.emoji.info} Use \`${prefix}help\``),
                 ],
             });
         };

@@ -20,25 +20,13 @@ export default class NowPlaying extends Command {
             await ctx.reply({
                 embeds: [
                     client.embed()
-                        .setAuthor({
-                            name: `🎵 Now Playing`,
-                            iconURL: client.user.displayAvatarURL()
-                        })
                         .setThumbnail(track.thumbnail || client.user.displayAvatarURL())
                         .desc(
-                            `Currently vibing to this amazing track! 💕\n\n` +
-                            `**${track.title}**\n` +
-                            `by *${track.author}*\n\n` +
+                            `${client.emoji.music} **${track.title}**\n` +
+                            `${client.emoji.info} ${track.author}\n\n` +
                             `${progressBar}\n` +
-                            `\`${client.formatDuration(position)}\` / \`${track.isStream ? '🔴 LIVE' : client.formatDuration(duration)}\`\n\n` +
-                            `${track.isStream ? '🔴 This is a live stream - enjoy the endless vibes!' : 
-                                duration > 0 ? `🎧 ${Math.round((duration - position) / 1000 / 60)} minutes of music left to enjoy!` : '🎧 Enjoying the music!'}`
+                            `\`${client.formatDuration(position)}\` / \`${track.isStream ? 'LIVE' : client.formatDuration(duration)}\``
                         )
-                        .footer({
-                            text: `💖 Requested by ${track.requester.displayName}`,
-                            iconURL: track.requester.displayAvatarURL?.() || ctx.author.displayAvatarURL()
-                        })
-                        .setTimestamp()
                 ],
             });
         };
