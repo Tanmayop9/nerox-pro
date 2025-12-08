@@ -1,5 +1,5 @@
 
-import { connect247 } from '../../lib/services/connect247.js';
+import { connect247 } from '../../../lib/services/connect247.js';
 const event = 'playerDestroy';
 export default class PlayerDetsroy {
     constructor() {

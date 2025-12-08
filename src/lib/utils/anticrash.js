@@ -2,7 +2,7 @@
  * @nerox v1.0.0
  * @author Tanmay
  */
-import { log } from '../logger.js';
+import { log } from '../../logger.js';
 const handleCrash = (type, ...args) => {
     const err = `${args[0]}`.toLowerCase();
     if (err.includes('unknown message') || err.includes('already destroyed')) {

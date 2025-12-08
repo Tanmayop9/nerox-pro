@@ -1,8 +1,8 @@
 
 import moment from 'moment';
 import { ActionRowBuilder } from 'discord.js';
-import { generatePlayEmbed } from '../../lib/services/generatePlayEmbed.js';
-import { generateSpotifyCard } from '../../lib/utils/spotifyCard.js';
+import { generatePlayEmbed } from '../../../lib/services/generatePlayEmbed.js';
+import { generateSpotifyCard } from '../../../lib/utils/spotifyCard.js';
 
 const event = 'trackStart';
 
