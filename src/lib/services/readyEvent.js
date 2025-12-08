@@ -1,10 +1,10 @@
-import { Client } from '../../dokdo/index.js';
-import { loadEvents } from '../system/loaders/events.js';
-import { loadCommands } from '../system/loaders/msgCmds.js';
-import { connect247 } from '../lib/services/connect247.js';
-import { deploySlashCommands } from '../system/loaders/slashCmds.js';
-import { setupWebhooks } from '../lib/services/setupWebhooks.js';
-import { initAutoBackup } from '../lib/services/autoBackup.js';
+import { Client } from '../../../dokdo/index.js';
+import { loadEvents } from '../../system/loaders/events.js';
+import { loadCommands } from '../../system/loaders/msgCmds.js';
+import { connect247 } from './connect247.js';
+import { deploySlashCommands } from '../../system/loaders/slashCmds.js';
+import { setupWebhooks } from './setupWebhooks.js';
+import { initAutoBackup } from './autoBackup.js';
 
 const SUPPORT_SERVER = 'https://discord.gg/p6nXDJMeyc';
 
