@@ -1,4 +1,4 @@
-import { limited } from '../../lib/utils/ratelimiter.js';
+import { limited } from '../../../lib/utils/ratelimiter.js';
 const event = 'mention';
 export default class Mention {
     constructor() {

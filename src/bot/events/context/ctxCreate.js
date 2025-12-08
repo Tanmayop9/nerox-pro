@@ -1,13 +1,13 @@
-import { execute } from '../../lib/services/context/execute.js';
-import { resolveNsfw } from '../../lib/services/context/resolveNsfw.js';
-import { resolvePerms } from '../../lib/services/context/resolvePerms.js';
-import { enforceAdmin } from '../../lib/services/context/enforceAdmin.js';
-import { resolveVoice } from '../../lib/services/context/resolveVoice.js';
-import { resolvePlayer } from '../../lib/services/context/resolvePlayer.js';
-import { isUnderCooldown } from '../../lib/services/context/checkCooldown.js';
-import { resolvePrefix } from '../../lib/services/context/resolvePrefix.js';
-import { resolveCommand } from '../../lib/services/context/resolveCommand.js';
-import { resolveBotAdmin } from '../../lib/services/context/resolveBotAdmin.js';
+import { execute } from '../../../lib/services/context/execute.js';
+import { resolveNsfw } from '../../../lib/services/context/resolveNsfw.js';
+import { resolvePerms } from '../../../lib/services/context/resolvePerms.js';
+import { enforceAdmin } from '../../../lib/services/context/enforceAdmin.js';
+import { resolveVoice } from '../../../lib/services/context/resolveVoice.js';
+import { resolvePlayer } from '../../../lib/services/context/resolvePlayer.js';
+import { isUnderCooldown } from '../../../lib/services/context/checkCooldown.js';
+import { resolvePrefix } from '../../../lib/services/context/resolvePrefix.js';
+import { resolveCommand } from '../../../lib/services/context/resolveCommand.js';
+import { resolveBotAdmin } from '../../../lib/services/context/resolveBotAdmin.js';
 
 const event = 'ctxCreate';
 

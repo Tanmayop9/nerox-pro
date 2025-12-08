@@ -1,7 +1,7 @@
 
 import { Collection } from 'discord.js';
 import { fromMs } from '../ms/fromMs.js';
-import { limited } from '../../lib/utils/ratelimiter.js';
+import { limited } from '../../utils/ratelimiter.js';
 import { RateLimitManager } from '@sapphire/ratelimits';
 const cooldownRateLimitManager = new RateLimitManager(5000);
 export const isUnderCooldown = async (ctx, command) => {

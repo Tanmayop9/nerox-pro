@@ -1,5 +1,5 @@
 
-import { log } from '../logger.js';
+import { log } from '../../logger.js';
 import { createCipheriv, randomBytes } from 'node:crypto';
 import { readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 const iv = randomBytes(16);

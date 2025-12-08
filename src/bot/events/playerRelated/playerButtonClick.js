@@ -1,5 +1,5 @@
 
-import { updatePlayerButtons } from '../../lib/services/updatePlayerButtons.js';
+import { updatePlayerButtons } from '../../../lib/services/updatePlayerButtons.js';
 const event = 'playerButtonClick';
 export default class PlayerButtonClick {
     constructor() {

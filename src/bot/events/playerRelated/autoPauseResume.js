@@ -1,5 +1,5 @@
 
-import { updatePlayerButtons } from '../../lib/services/updatePlayerButtons.js';
+import { updatePlayerButtons } from '../../../lib/services/updatePlayerButtons.js';
 const event = 'voiceStateUpdate';
 export default class AutoPauseResume {
     constructor() {
