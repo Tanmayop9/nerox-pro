@@ -1,4 +1,4 @@
-import { Command } from '../../bot/structures/abstract/command.js';
+import { Command } from '../../structures/abstract/command.js';
 import { ActionRowBuilder, StringSelectMenuBuilder } from 'discord.js';
 
 export default class SearchEngine extends Command {

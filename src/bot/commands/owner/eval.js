@@ -2,7 +2,7 @@
  * @nerox v1.0.0
  * @author Tanmay
  */
-import { Command } from '../../bot/structures/abstract/command.js';
+import { Command } from '../../structures/abstract/command.js';
 import util from 'util';
 
 export default class Eval extends Command {

@@ -3,9 +3,9 @@
  * @author painfuego (www.codes-for.fun)
  * @copyright 2024 1sT - Services | CC BY-NC-SA 4.0
  */
-import { paginator } from '../../lib/utils/paginator.js';
-import { Command } from '../../bot/structures/abstract/command.js';
-import { getPrefix } from '../../lib/utils/getPrefix.js';
+import { paginator } from '../../../lib/utils/paginator.js';
+import { Command } from '../../structures/abstract/command.js';
+import { getPrefix } from '../../../lib/utils/getPrefix.js';
 export default class Profile extends Command {
     constructor() {
         super(...arguments);

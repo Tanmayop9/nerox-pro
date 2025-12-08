@@ -1,4 +1,4 @@
-import { createContext } from '../../lib/services/contextFrom/interaction.js';
+import { createContext } from '../../../lib/services/contextFrom/interaction.js';
 const event = 'interactionCreate';
 
 export default class InteractionCreate {

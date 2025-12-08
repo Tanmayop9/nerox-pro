@@ -1,8 +1,8 @@
-import { filter } from '../../lib/utils/filter.js';
-import { toMs } from '../../lib/services/ms/toMs.js';
-import { fromMs } from '../../lib/services/ms/fromMs.js';
-import { progressBar } from '../../lib/utils/progressbar.js';
-import { Command } from '../../bot/structures/abstract/command.js';
+import { filter } from '../../../lib/utils/filter.js';
+import { toMs } from '../../../lib/services/ms/toMs.js';
+import { fromMs } from '../../../lib/services/ms/fromMs.js';
+import { progressBar } from '../../../lib/utils/progressbar.js';
+import { Command } from '../../structures/abstract/command.js';
 import { ActionRowBuilder } from 'discord.js';
 export default class Seek extends Command {
     constructor() {

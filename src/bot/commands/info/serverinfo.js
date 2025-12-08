@@ -3,8 +3,8 @@ import {
   StringSelectMenuBuilder,
   ChannelType,
 } from 'discord.js';
-import { Command } from '../../bot/structures/abstract/command.js';
-import { filter } from '../../lib/utils/filter.js';
+import { Command } from '../../structures/abstract/command.js';
+import { filter } from '../../../lib/utils/filter.js';
 
 export default class ServerInfo extends Command {
   constructor() {

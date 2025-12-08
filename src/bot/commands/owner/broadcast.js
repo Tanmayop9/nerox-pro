@@ -2,7 +2,7 @@
  * @nerox v1.0.0
  * @author Tanmay
  */
-import { Command } from '../../bot/structures/abstract/command.js';
+import { Command } from '../../structures/abstract/command.js';
 
 export default class Broadcast extends Command {
     constructor() {

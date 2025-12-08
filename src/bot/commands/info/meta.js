@@ -3,9 +3,9 @@
  * @author Tanmay
  */
 import _ from 'lodash';
-import { Command } from '../../bot/structures/abstract/command.js';
-import { paginator } from '../../lib/utils/paginator.js';
-import { getCodeStats } from '../../lib/utils/codestats.js';
+import { Command } from '../../structures/abstract/command.js';
+import { paginator } from '../../../lib/utils/paginator.js';
+import { getCodeStats } from '../../../lib/utils/codestats.js';
 
 export default class CodeStats extends Command {
 	constructor() {

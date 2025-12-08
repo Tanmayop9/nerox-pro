@@ -4,8 +4,8 @@
  * @copyright 2024 1sT - Services | CC BY-NC-SA 4.0
  */
 import { ActionRowBuilder, StringSelectMenuBuilder, } from 'discord.js';
-import { filter } from '../../lib/utils/filter.js';
-import { Command } from '../../bot/structures/abstract/command.js';
+import { filter } from '../../../lib/utils/filter.js';
+import { Command } from '../../structures/abstract/command.js';
 const rad = {
     rap: `https://www.youtube.com/watch?v=1y2R_i2OeFw&pp=ygUMYmFzcyBzYW11cmFp`,
     lofi: `https://www.youtube.com/watch?v=jfKfPfyJRdk&pp=ygUKbG9maSByYWRpbw%3D%3D`,

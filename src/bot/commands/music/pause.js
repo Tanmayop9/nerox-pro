@@ -1,5 +1,5 @@
-import { Command } from '../../bot/structures/abstract/command.js';
-import { updatePlayerButtons } from '../../lib/services/updatePlayerButtons.js';
+import { Command } from '../../structures/abstract/command.js';
+import { updatePlayerButtons } from '../../../lib/services/updatePlayerButtons.js';
 export default class Pause extends Command {
     constructor() {
         super(...arguments);

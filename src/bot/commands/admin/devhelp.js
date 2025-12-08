@@ -3,7 +3,7 @@
  * @author painfuego (www.codes-for.fun)
  * @copyright 2024 1sT - Services | CC BY-NC-SA 4.0
  */
-import { Command } from '../../bot/structures/abstract/command.js';
+import { Command } from '../../structures/abstract/command.js';
 export default class Commands extends Command {
     constructor() {
         super(...arguments);

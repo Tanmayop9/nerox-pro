@@ -1,5 +1,5 @@
-import { paginator } from '../../lib/utils/paginator.js';
-import { Command } from '../../bot/structures/abstract/command.js';
+import { paginator } from '../../../lib/utils/paginator.js';
+import { Command } from '../../structures/abstract/command.js';
 
 export default class Ignore extends Command {
     constructor() {

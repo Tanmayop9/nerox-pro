@@ -3,8 +3,8 @@
  * @author Tanmay
  * @copyright 2024 NeroX - Services
  */
-import { Command } from '../../bot/structures/abstract/command.js';
-import { paginator } from '../../lib/utils/paginator.js';
+import { Command } from '../../structures/abstract/command.js';
+import { paginator } from '../../../lib/utils/paginator.js';
 
 export default class Stats extends Command {
     constructor() {

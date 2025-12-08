@@ -1,6 +1,6 @@
 import { ActionRowBuilder, StringSelectMenuBuilder } from 'discord.js';
-import { filter } from '../../lib/utils/filter.js';
-import { Command } from '../../bot/structures/abstract/command.js';
+import { filter } from '../../../lib/utils/filter.js';
+import { Command } from '../../structures/abstract/command.js';
 
 export default class Help extends Command {
 	constructor() {

@@ -4,8 +4,8 @@
  * @copyright 2024 1sT - Services | CC BY-NC-SA 4.0
  */
 import _ from 'lodash';
-import { paginator } from '../../lib/utils/paginator.js';
-import { Command } from '../../bot/structures/abstract/command.js';
+import { paginator } from '../../../lib/utils/paginator.js';
+import { Command } from '../../structures/abstract/command.js';
 export default class NoPrefix extends Command {
     constructor() {
         super(...arguments);

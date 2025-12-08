@@ -1,5 +1,5 @@
 
-import { Command } from '../../bot/structures/abstract/command.js';
+import { Command } from '../../structures/abstract/command.js';
 export default class Play extends Command {
     constructor() {
         super(...arguments);

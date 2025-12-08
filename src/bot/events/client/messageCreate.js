@@ -1,5 +1,5 @@
-import { createContext } from '../../lib/services/contextFrom/message.js';
-import { addMessageCount } from '../../lib/utils/messageCount.js';
+import { createContext } from '../../../lib/services/contextFrom/message.js';
+import { addMessageCount } from '../../../lib/utils/messageCount.js';
 import moment from 'moment';
 
 const event = 'messageCreate';

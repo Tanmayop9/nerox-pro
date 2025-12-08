@@ -4,7 +4,7 @@
  * © 2024 Neptune Headquarters
  */
 
-import { Command } from '../../bot/structures/abstract/command.js';
+import { Command } from '../../structures/abstract/command.js';
 import {
 	ActionRowBuilder,
 	ButtonBuilder,

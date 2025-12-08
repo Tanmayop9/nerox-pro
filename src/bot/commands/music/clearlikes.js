@@ -1,5 +1,5 @@
-import { Command } from '../../bot/structures/abstract/command.js';
-import { getPrefix } from '../../lib/utils/getPrefix.js';
+import { Command } from '../../structures/abstract/command.js';
+import { getPrefix } from '../../../lib/utils/getPrefix.js';
 
 export default class ClearLikes extends Command {
     constructor() {

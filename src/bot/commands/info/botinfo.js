@@ -1,8 +1,8 @@
 import { ActionRowBuilder, StringSelectMenuBuilder } from 'discord.js';
 import os from 'os';
 import moment from 'moment';
-import { Command } from '../../bot/structures/abstract/command.js';
-import { filter } from '../../lib/utils/filter.js';
+import { Command } from '../../structures/abstract/command.js';
+import { filter } from '../../../lib/utils/filter.js';
 
 export default class BotInfo extends Command {
 	constructor() {

@@ -1,6 +1,6 @@
-import { Command } from '../../bot/structures/abstract/command.js';
+import { Command } from '../../structures/abstract/command.js';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { getPrefix } from '../../lib/utils/getPrefix.js';
+import { getPrefix } from '../../../lib/utils/getPrefix.js';
 
 export default class ShowLiked extends Command {
     constructor() {

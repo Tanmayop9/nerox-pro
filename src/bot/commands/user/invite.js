@@ -1,5 +1,5 @@
 import { ActionRowBuilder } from 'discord.js';
-import { Command } from '../../bot/structures/abstract/command.js';
+import { Command } from '../../structures/abstract/command.js';
 
 export default class Invite extends Command {
     constructor() {

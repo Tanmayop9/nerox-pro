@@ -2,8 +2,8 @@
  * @nerox v1.0.0
  * @author Tanmay
  */
-import { Command } from '../../bot/structures/abstract/command.js';
-import { paginator } from '../../lib/utils/paginator.js';
+import { Command } from '../../structures/abstract/command.js';
+import { paginator } from '../../../lib/utils/paginator.js';
 
 export default class Servers extends Command {
     constructor() {

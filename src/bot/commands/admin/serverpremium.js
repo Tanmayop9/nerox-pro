@@ -1,5 +1,5 @@
 import ms from 'ms';
-import { Command } from '../../bot/structures/abstract/command.js';
+import { Command } from '../../structures/abstract/command.js';
 
 export default class PremiumServer extends Command {
     constructor() {

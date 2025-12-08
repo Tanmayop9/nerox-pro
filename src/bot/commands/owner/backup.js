@@ -9,8 +9,8 @@ import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { AttachmentBuilder } from 'discord.js';
-import { zipper } from '../../lib/utils/zipper.js';
-import { Command } from '../../bot/structures/abstract/command.js';
+import { zipper } from '../../../lib/utils/zipper.js';
+import { Command } from '../../structures/abstract/command.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
