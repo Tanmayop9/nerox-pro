@@ -7,7 +7,7 @@ import axios from "axios";
 import { readFileSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
-import { endGiveaway } from "../lib/utils/giveawayUtils.js";
+import { endGiveaway } from "../utils/giveawayUtils.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

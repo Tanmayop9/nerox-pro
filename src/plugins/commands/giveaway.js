@@ -10,7 +10,7 @@ import {
     getPrizeInfo, 
     parseDuration, 
     parsePremiumDuration 
-} from '../lib/utils/giveawayUtils.js';
+} from '../utils/giveawayUtils.js';
 
 export default {
     name: 'giveaway',
