@@ -2,15 +2,15 @@ import moment from "moment";
 import { readdirSync } from "fs";
 import { Manager } from "./manager.js";
 import { fileURLToPath } from "node:url";
-import { emoji } from '../assets/emoji.js";
+import { emoji } from '../assets/emoji.js';
 import format from "moment-duration-format";
-import { josh } from '../lib/services/josh.js";
+import { josh } from '../lib/services/josh.js';
 import { log } from "../logger.js";
 import { dirname, resolve } from "node:path";
 import { ExtendedEmbedBuilder } from "./embed.js";
 import { ExtendedButtonBuilder } from "./button.js";
 import { OAuth2Scopes } from "discord-api-types/v10";
-import { readyEvent } from '../lib/services/readyEvent.js";
+import { readyEvent } from '../lib/services/readyEvent.js';
 import { Client, Partials, Collection, GatewayIntentBits, WebhookClient } from "discord.js";
 import { ClusterClient, getInfo } from "discord-hybrid-sharding";
 import { config } from "./config.js";  // 🔥 Now loads config directly

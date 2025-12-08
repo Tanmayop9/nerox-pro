@@ -82,16 +82,7 @@ export default class Profile extends Command {
             for (const [key, value] of Object.entries(challenges.songsPlayed))
                 if (songsPlayed >= value.count)
                     badges.push(`${value.emoji} **${key[0].toUpperCase() + key.slice(1)}** (Listen to any song/s ${value.count} times)`);
-            const achievementsEmbed = client
-                .embed()
-                .setAuthor({
-                name: ctx.author.username,
-                iconURL: ctx.author.displayAvatarURL(),
-            })
-                .desc(Object.entries(achievements)
-                .map(([key, value]) => `${client.emoji.check} **${key[0].toUpperCase() + key.slice(1)} :**\n\n` +
-                `${value.join('\n')}`)
-                .join('\n\n'));
+            
             // Overview Page
             const overviewEmbed = client
                 .embed()
