@@ -12,6 +12,5 @@ function runScript(path) {
   return proc;
 }
 
-// Start both scripts
+// Start main script
 runScript("./src/index.js");
-runScript("./src/plugins/index.js");
