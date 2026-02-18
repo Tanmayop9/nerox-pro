@@ -84,7 +84,7 @@ export default class PlayerButtonClick {
             player.queue.unshift(player.queue.current);
             player.queue.unshift(previousTrack);
             await player.shoukaku.stopTrack();
-            player.queue.previous.pop();
+            // Note: We already popped once above, don't pop again
           }
           break;
         case "like":

@@ -42,12 +42,16 @@ export default class Similar extends Command {
         });
         return;
       }
-      const options = tracks.map((track, index) => ({
-        label: `${index} -  ${track.title.charAt(0).toUpperCase() + track.title.substring(1, 30)}`,
-        value: `${index}`,
-        description: `Author: ${track.author.substring(0, 30)}     Duration: ${track?.isStream ? "LIVE" : client.formatDuration(track.length)}`,
-        emoji: client.emoji.info,
-      }));
+      const options = tracks.map((track, index) => {
+        const title = track.title || "Unknown Track";
+        const author = track.author || "Unknown Artist";
+        return {
+          label: `${index} - ${title.charAt(0).toUpperCase() + title.substring(1, 30)}`,
+          value: `${index}`,
+          description: `Author: ${author.substring(0, 30)}     Duration: ${track?.isStream ? "LIVE" : client.formatDuration(track.length)}`,
+          emoji: client.emoji.info,
+        };
+      });
       const menu = new StringSelectMenuBuilder()
         .setMinValues(1)
         .setCustomId("menu")
@@ -71,9 +75,14 @@ export default class Similar extends Command {
           notAdded: [""],
         };
         for (const value of interaction.values) {
-          const song = tracks[parseInt(value)];
-          if (song.length < 10000) {
-            desc.notAdded.push(`${client.emoji.cross} ${song.title}\n`);
+          const index = parseInt(value);
+          if (isNaN(index) || index < 0 || index >= tracks.length) {
+            desc.notAdded.push(`${client.emoji.cross} Invalid selection\n`);
+            continue;
+          }
+          const song = tracks[index];
+          if (!song || song.length < 10000) {
+            desc.notAdded.push(`${client.emoji.cross} ${song?.title || "Unknown track"}\n`);
             continue;
           }
           player.queue.add(song);

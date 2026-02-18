@@ -118,7 +118,7 @@ export default class StaffManage extends Command {
         }
 
         const duration = parseInt(args[2]);
-        if (!duration || duration < 1 || duration > 365) {
+        if (isNaN(duration) || duration < 1 || duration > 365) {
           return ctx.reply({
             embeds: [
               client

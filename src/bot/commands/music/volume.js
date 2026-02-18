@@ -21,7 +21,11 @@ export default class Volume extends Command {
     ];
     this.execute = async (client, ctx, args) => {
       const player = client.getPlayer(ctx);
-      const volume = Math.ceil(parseInt(args[0])) || player.volume;
+      const parsedVolume = parseInt(args[0]);
+      const volume = !isNaN(parsedVolume) && parsedVolume > 0 
+        ? Math.ceil(parsedVolume) 
+        : player.volume;
+      
       if (volume > 150 || volume < 1) {
         await ctx.reply({
           embeds: [

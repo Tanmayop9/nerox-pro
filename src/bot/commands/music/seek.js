@@ -57,7 +57,7 @@ export default class Seek extends Command {
       }
       const generateEmbed = () => {
         const _player = client.getPlayer(ctx);
-        if (!player) return client.embed().desc(`Player not found.`);
+        if (!_player) return client.embed().desc(`Player not found.`);
         return client
           .embed()
           .desc(

@@ -24,13 +24,13 @@ export default class Previous extends Command {
       player.queue.unshift(player.queue.current);
       player.queue.unshift(previousTrack);
       await player.shoukaku.stopTrack();
-      player.queue.previous.pop();
+      // Note: We already popped once above, don't pop again
       await ctx.reply({
         embeds: [
           client
             .embed()
             .desc(
-              `${client.emoji.check} Playing previous song ${previousTrack.title.substring(0, 13)}.`,
+              `${client.emoji.check} Playing previous song ${previousTrack.title?.substring(0, 13) || "Unknown"}.`,
             ),
         ],
       });
