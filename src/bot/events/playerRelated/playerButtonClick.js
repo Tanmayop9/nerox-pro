@@ -20,7 +20,7 @@ export default class PlayerButtonClick {
             client
               .embed()
               .desc(
-                `${client.emoji.cross} You must be in ${botVc} to be able to do this.`,
+                `${client.emoji.cross} You must be in ${botVc?.name || "the same voice channel"} to be able to do this.`,
               ),
           ],
           ephemeral: true,
@@ -46,7 +46,7 @@ export default class PlayerButtonClick {
           await updatePlayerButtons(client, player);
           break;
         case "next":
-          if (player.queue.length == 0 && !player.data.get("autoplayStatus")) {
+          if (player.queue.length === 0 && !player.data.get("autoplayStatus")) {
             await interaction.reply({
               embeds: [
                 client

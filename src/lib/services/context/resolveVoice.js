@@ -15,13 +15,13 @@ export const resolveVoice = async (ctx, command) => {
     });
     return false;
   }
-  if (command.inSameVC && botVc && botVc.id != memberVc.id) {
+  if (command.inSameVC && botVc && botVc.id !== memberVc.id) {
     await ctx.reply({
       embeds: [
         client
           .embed()
           .desc(
-            `${client.emoji.cross} You must be in ${botVc} to use this command.`,
+            `${client.emoji.cross} You must be in ${botVc.name || "the same voice channel"} to use this command.`,
           ),
       ],
     });

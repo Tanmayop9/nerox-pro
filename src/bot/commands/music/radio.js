@@ -70,7 +70,7 @@ export default class Radio extends Command {
         await reply.delete();
       });
       collector.on("end", async (collected) => {
-        if (collected.size == 0)
+        if (collected.size === 0)
           await reply.edit({
             embeds: [
               client

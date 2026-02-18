@@ -8,7 +8,7 @@ export default class Skip extends Command {
     this.description = "Plays next song";
     this.execute = async (client, ctx) => {
       const player = client.getPlayer(ctx);
-      if (player.queue.length == 0 && !player.data.get("autoplayStatus")) {
+      if (player.queue.length === 0 && !player.data.get("autoplayStatus")) {
         await ctx.reply({
           embeds: [
             client

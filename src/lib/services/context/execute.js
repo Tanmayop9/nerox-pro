@@ -63,6 +63,21 @@ export const execute = async (ctx, command, args) => {
       `Error executing command ${command?.name || "Unknown"}:`,
       err,
     );
+    
+    // Notify user of the error
+    try {
+      await ctx.reply({
+        embeds: [
+          client
+            .embed()
+            .desc(
+              `${client.emoji.cross} An error occurred while executing the command. Please try again later.`,
+            ),
+        ],
+      }).catch(() => {}); // Ignore if reply fails
+    } catch (replyErr) {
+      console.error("Failed to send error message to user:", replyErr);
+    }
   }
 };
 
