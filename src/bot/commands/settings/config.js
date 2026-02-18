@@ -1,4 +1,4 @@
-import { Command } from "../../bot/structures/abstract/command.js";
+import { Command } from "../../structures/abstract/command.js";
 import Canvas from "canvas";
 import { AttachmentBuilder, EmbedBuilder } from "discord.js";
 

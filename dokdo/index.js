@@ -2,33 +2,41 @@
 
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) =>
-  key in obj ?
-    __defProp(obj, key, {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value,
-    })
-  : (obj[key] = value);
-var __name = (target, value) => __defProp(target, 'name', { value, configurable: true });
+  key in obj
+    ? __defProp(obj, key, {
+        enumerable: true,
+        configurable: true,
+        writable: true,
+        value,
+      })
+    : (obj[key] = value);
+var __name = (target, value) =>
+  __defProp(target, "name", { value, configurable: true });
 var __export = (target, all) => {
-  for (var name in all) __defProp(target, name, { get: all[name], enumerable: true });
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
 };
 var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, typeof key !== 'symbol' ? key + '' : key, value);
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
 };
 
 // node_modules/tsup/assets/esm_shims.js
-import { fileURLToPath } from 'node:url';
-import path from 'path';
-var getFilename = /* @__PURE__ */ __name(() => fileURLToPath(import.meta.url), 'getFilename');
-var getDirname = /* @__PURE__ */ __name(() => path.dirname(getFilename()), 'getDirname');
+import { fileURLToPath } from "node:url";
+import path from "path";
+var getFilename = /* @__PURE__ */ __name(
+  () => fileURLToPath(import.meta.url),
+  "getFilename",
+);
+var getDirname = /* @__PURE__ */ __name(
+  () => path.dirname(getFilename()),
+  "getDirname",
+);
 var __dirname = /* @__PURE__ */ getDirname();
 
 // src/index.ts
-import { Client, Message as Message8, User as User2 } from 'discord.js';
-import fetch2 from 'node-fetch';
+import { Client, Message as Message8, User as User2 } from "discord.js";
+import fetch2 from "node-fetch";
 
 // src/utils/index.ts
 var utils_exports = {};
@@ -49,7 +57,7 @@ __export(utils_exports, {
 });
 
 // src/utils/ProcessManager.ts
-import Discord, { ComponentType, Message } from 'discord.js';
+import Discord, { ComponentType, Message } from "discord.js";
 var ProcessManager = class {
   constructor(message2, content, dokdo, options = {}) {
     this.content = content;
@@ -57,19 +65,19 @@ var ProcessManager = class {
     this.options = options;
     this.target = message2.channel;
     this.dokdo = dokdo;
-    this.content = content || '\u200B';
-    this.messageContent = '';
+    this.content = content || "\u200B";
+    this.messageContent = "";
     this.options = options;
     this.limit = options.limit || 1900;
-    this.splitted = this.splitContent() || [' '];
+    this.splitted = this.splitContent() || [" "];
     this.page = 1;
     this.author = message2 instanceof Message ? message2.author : message2.user;
     this.actions = [];
     this.wait = 1;
     this.message = void 0;
     this.argument = [];
-    if (typeof this.content !== 'string') {
-      throw new Error('Please pass valid content');
+    if (typeof this.content !== "string") {
+      throw new Error("Please pass valid content");
     }
   }
   target;
@@ -86,7 +94,9 @@ var ProcessManager = class {
   messageComponentCollector;
   async init() {
     this.messageContent = this.genText();
-    this.message = await this.target.send(this.filterSecret(this.messageContent));
+    this.message = await this.target.send(
+      this.filterSecret(this.messageContent),
+    );
   }
   async addAction(actions, args) {
     if (!this.message) return;
@@ -94,19 +104,20 @@ var ProcessManager = class {
     this.args = args || {};
     this.args.manager = this;
     this.createMessageComponentMessage();
-    this.messageComponentCollector = this.message.createMessageComponentCollector({
-      componentType: ComponentType.Button,
-      filter: (interaction) =>
-        Boolean(
-          this.actions.find(
-            // @ts-ignore
-            (e) => e.button.data.custom_id === interaction.customId,
-          ) && interaction.user.id === this.author.id,
-        ),
-      time: 3e5,
-      dispose: true,
-    });
-    this.messageComponentCollector.on('collect', (component) => {
+    this.messageComponentCollector =
+      this.message.createMessageComponentCollector({
+        componentType: ComponentType.Button,
+        filter: (interaction) =>
+          Boolean(
+            this.actions.find(
+              // @ts-ignore
+              (e) => e.button.data.custom_id === interaction.customId,
+            ) && interaction.user.id === this.author.id,
+          ),
+        time: 3e5,
+        dispose: true,
+      });
+    this.messageComponentCollector.on("collect", (component) => {
       const event = this.actions.find(
         // @ts-ignore
         (e) => e.button.data.custom_id === component.customId,
@@ -115,7 +126,7 @@ var ProcessManager = class {
       component.deferUpdate();
       event.action(this.args);
     });
-    this.messageComponentCollector.on('end', () => {
+    this.messageComponentCollector.on("end", () => {
       this.message?.edit({ components: [] });
     });
   }
@@ -131,17 +142,20 @@ var ProcessManager = class {
     this.message?.edit({ components: [actionRow] });
   }
   filterSecret(string) {
-    string = string.replace(new RegExp(this.dokdo.client.token, 'gi'), '[accesstoken was hidden]');
+    string = string.replace(
+      new RegExp(this.dokdo.client.token, "gi"),
+      "[accesstoken was hidden]",
+    );
     if (this.dokdo.options.secrets) {
       for (const el of this.dokdo.options.secrets) {
-        string = string.replace(new RegExp(regexpEscape(el), 'gi'), '[secret]');
+        string = string.replace(new RegExp(regexpEscape(el), "gi"), "[secret]");
       }
     }
     return string;
   }
   updatePage(num) {
     if (!this.message) return;
-    if (this.splitted.length < num || num < 1) throw new Error('Invalid page.');
+    if (this.splitted.length < num || num < 1) throw new Error("Invalid page.");
     this.page = num;
     this.genText();
     this.update();
@@ -185,18 +199,21 @@ var ProcessManager = class {
     this.messageComponentCollector?.stop();
   }
   genText() {
-    return this.options.noCode && this.splitted.length < 2 ?
-        `${this.splitted[this.page - 1]}`
+    return this.options.noCode && this.splitted.length < 2
+      ? `${this.splitted[this.page - 1]}`
       : `${codeBlock.construct(this.splitted[this.page - 1], this.options.lang)}
 
 Page ${this.page}/${this.splitted.length}`;
   }
   splitContent() {
-    const char = [new RegExp(`.{1,${this.limit}}`, 'g'), '\n'];
+    const char = [new RegExp(`.{1,${this.limit}}`, "g"), "\n"];
     const text = Discord.verifyString(this.content);
     if (text.length <= this.limit) return [text];
     let splitText = [text];
-    while (char.length > 0 && splitText.some((elem) => elem.length > this.limit)) {
+    while (
+      char.length > 0 &&
+      splitText.some((elem) => elem.length > this.limit)
+    ) {
       const currentChar = char.shift();
       if (currentChar instanceof RegExp) {
         splitText = splitText
@@ -207,27 +224,27 @@ Page ${this.page}/${this.splitted.length}`;
       }
     }
     if (splitText.some((elem) => elem.length > this.limit)) {
-      throw new RangeError('SPLIT_MAX_LEN');
+      throw new RangeError("SPLIT_MAX_LEN");
     }
     const messages = [];
-    let msg2 = '';
+    let msg2 = "";
     for (const chunk of splitText) {
       if (msg2 && (msg2 + char + chunk).length > this.limit) {
         messages.push(msg2);
-        msg2 = '';
+        msg2 = "";
       }
-      msg2 += (msg2 && msg2 !== '' ? char : '') + chunk;
+      msg2 += (msg2 && msg2 !== "" ? char : "") + chunk;
     }
     return messages.concat(msg2).filter((m) => m);
   }
 };
-__name(ProcessManager, 'ProcessManager');
+__name(ProcessManager, "ProcessManager");
 
 // src/utils/codeBlock.ts
 var codeBlock = class {
   static construct(content, lang) {
-    return `\`\`\`${content ? lang || '' : ''}
-${content?.replaceAll('```', '\\`\\`\\`')}
+    return `\`\`\`${content ? lang || "" : ""}
+${content?.replaceAll("```", "\\`\\`\\`")}
 \`\`\``;
   }
   static parse(content) {
@@ -235,7 +252,7 @@ ${content?.replaceAll('```', '\\`\\`\\`')}
     return result2 ? result2.slice(0, 3).map((el) => el.trim()) : null;
   }
 };
-__name(codeBlock, 'codeBlock');
+__name(codeBlock, "codeBlock");
 
 // src/utils/hljs.ts
 var HLJS = class {
@@ -243,330 +260,330 @@ var HLJS = class {
    * Get highlight.js language of given query.
    */
   static getLang(query) {
-    if (!query || typeof query !== 'string') return void 0;
+    if (!query || typeof query !== "string") return void 0;
     return this.languages.find((l) => query.endsWith(l));
   }
 };
-__name(HLJS, 'HLJS');
+__name(HLJS, "HLJS");
 __publicField(
   HLJS,
-  'languages',
+  "languages",
   [
-    'as',
-    '1c',
-    'abnf',
-    'accesslog',
-    'actionscript',
-    'ada',
-    'ado',
-    'adoc',
-    'apache',
-    'apacheconf',
-    'applescript',
-    'arduino',
-    'arm',
-    'armasm',
-    'asciidoc',
-    'aspectj',
-    'atom',
-    'autohotkey',
-    'autoit',
-    'avrasm',
-    'awk',
-    'axapta',
-    'bash',
-    'basic',
-    'bat',
-    'bf',
-    'bind',
-    'bnf',
-    'brainfuck',
-    'c',
-    'c++',
-    'cal',
-    'capnp',
-    'capnproto',
-    'cc',
-    'ceylon',
-    'clean',
-    'clj',
-    'clojure-repl',
-    'clojure',
-    'cls',
-    'cmake.in',
-    'cmake',
-    'cmd',
-    'coffee',
-    'coffeescript',
-    'console',
-    'coq',
-    'cos',
-    'cpp',
-    'cr',
-    'craftcms',
-    'crm',
-    'crmsh',
-    'crystal',
-    'cs',
-    'csharp',
-    'cson',
-    'csp',
-    'css',
-    'd',
-    'dart',
-    'dcl',
-    'delphi',
-    'dfm',
-    'diff',
-    'django',
-    'dns',
-    'do',
-    'docker',
-    'dockerfile',
-    'dos',
-    'dpr',
-    'dsconfig',
-    'dst',
-    'dts',
-    'dust',
-    'ebnf',
-    'elixir',
-    'elm',
-    'erb',
-    'erl',
-    'erlang-repl',
-    'erlang',
-    'excel',
-    'f90',
-    'f95',
-    'feature',
-    'fix',
-    'flix',
-    'fortran',
-    'freepascal',
-    'fs',
-    'fsharp',
-    'gams',
-    'gauss',
-    'gcode',
-    'gemspec',
-    'gherkin',
-    'glsl',
-    'gms',
-    'go',
-    'golang',
-    'golo',
-    'gradle',
-    'graph',
-    'groovy',
-    'gss',
-    'gyp',
-    'h',
-    'h++',
-    'haml',
-    'handlebars',
-    'haskell',
-    'haxe',
-    'hbs',
-    'hpp',
-    'hs',
-    'hsp',
-    'html.handlebars',
-    'html.hbs',
-    'html',
-    'htmlbars',
-    'http',
-    'https',
-    'hx',
-    'hy',
-    'hylang',
-    'i7',
-    'iced',
-    'icl',
-    'inform7',
-    'ini',
-    'instances',
-    'irb',
-    'irpf90',
-    'java',
-    'javascript',
-    'jboss-cli',
-    'jinja',
-    'js',
-    'json',
-    'jsp',
-    'jsx',
-    'julia',
-    'k',
-    'kdb',
-    'kotlin',
-    'lasso',
-    'lassoscript',
-    'lazarus',
-    'ldif',
-    'leaf',
-    'less',
-    'lfm',
-    'lisp',
-    'livecodeserver',
-    'livescript',
-    'llvm',
-    'lpr',
-    'ls',
-    'lsl',
-    'lua',
-    'm',
-    'mak',
-    'makefile',
-    'markdown',
-    'mathematica',
-    'matlab',
-    'maxima',
-    'md',
-    'mel',
-    'mercury',
-    'mips',
-    'mipsasm',
-    'mizar',
-    'mk',
-    'mkd',
-    'mkdown',
-    'ml',
-    'mm',
-    'mma',
-    'mojolicious',
-    'monkey',
-    'moo',
-    'moon',
-    'moonscript',
-    'n1ql',
-    'nc',
-    'nginx',
-    'nginxconf',
-    'nim',
-    'nimrod',
-    'nix',
-    'nixos',
-    'nsis',
-    'obj-c',
-    'objc',
-    'objectivec',
-    'ocaml',
-    'openscad',
-    'osascript',
-    'oxygene',
-    'p21',
-    'parser3',
-    'pas',
-    'pascal',
-    'patch',
-    'pb',
-    'pbi',
-    'pcmk',
-    'perl',
-    'pf.conf',
-    'pf',
-    'php',
-    'php3',
-    'php4',
-    'php5',
-    'php6',
-    'pl',
-    'plist',
-    'pm',
-    'podspec',
-    'pony',
-    'powershell',
-    'pp',
-    'processing',
-    'profile',
-    'prolog',
-    'protobuf',
-    'ps',
-    'puppet',
-    'purebasic',
-    'py',
-    'python',
-    'q',
-    'qml',
-    'qt',
-    'r',
-    'rb',
-    'rib',
-    'roboconf',
-    'rs',
-    'rsl',
-    'rss',
-    'ruby',
-    'ruleslanguage',
-    'rust',
-    'scad',
-    'scala',
-    'scheme',
-    'sci',
-    'scilab',
-    'scss',
-    'sh',
-    'shell',
-    'smali',
-    'smalltalk',
-    'sml',
-    'sqf',
-    'sql',
-    'st',
-    'stan',
-    'stata',
-    'step',
-    'step21',
-    'stp',
-    'styl',
-    'stylus',
-    'subunit',
-    'sv',
-    'svh',
-    'swift',
-    'taggerscript',
-    'tao',
-    'tap',
-    'tcl',
-    'tex',
-    'thor',
-    'thrift',
-    'tk',
-    'toml',
-    'tp',
-    'ts',
-    'twig',
-    'typescript',
-    'v',
-    'vala',
-    'vb',
-    'vbnet',
-    'vbs',
-    'vbscript-html',
-    'vbscript',
-    'verilog',
-    'vhdl',
-    'vim',
-    'wildfly-cli',
-    'x86asm',
-    'xhtml',
-    'xjb',
-    'xl',
-    'xls',
-    'xlsx',
-    'xml',
-    'xpath',
-    'xq',
-    'xquery',
-    'xsd',
-    'xsl',
-    'yaml',
-    'yml',
-    'zep',
-    'zephir',
-    'zone',
-    'zsh',
+    "as",
+    "1c",
+    "abnf",
+    "accesslog",
+    "actionscript",
+    "ada",
+    "ado",
+    "adoc",
+    "apache",
+    "apacheconf",
+    "applescript",
+    "arduino",
+    "arm",
+    "armasm",
+    "asciidoc",
+    "aspectj",
+    "atom",
+    "autohotkey",
+    "autoit",
+    "avrasm",
+    "awk",
+    "axapta",
+    "bash",
+    "basic",
+    "bat",
+    "bf",
+    "bind",
+    "bnf",
+    "brainfuck",
+    "c",
+    "c++",
+    "cal",
+    "capnp",
+    "capnproto",
+    "cc",
+    "ceylon",
+    "clean",
+    "clj",
+    "clojure-repl",
+    "clojure",
+    "cls",
+    "cmake.in",
+    "cmake",
+    "cmd",
+    "coffee",
+    "coffeescript",
+    "console",
+    "coq",
+    "cos",
+    "cpp",
+    "cr",
+    "craftcms",
+    "crm",
+    "crmsh",
+    "crystal",
+    "cs",
+    "csharp",
+    "cson",
+    "csp",
+    "css",
+    "d",
+    "dart",
+    "dcl",
+    "delphi",
+    "dfm",
+    "diff",
+    "django",
+    "dns",
+    "do",
+    "docker",
+    "dockerfile",
+    "dos",
+    "dpr",
+    "dsconfig",
+    "dst",
+    "dts",
+    "dust",
+    "ebnf",
+    "elixir",
+    "elm",
+    "erb",
+    "erl",
+    "erlang-repl",
+    "erlang",
+    "excel",
+    "f90",
+    "f95",
+    "feature",
+    "fix",
+    "flix",
+    "fortran",
+    "freepascal",
+    "fs",
+    "fsharp",
+    "gams",
+    "gauss",
+    "gcode",
+    "gemspec",
+    "gherkin",
+    "glsl",
+    "gms",
+    "go",
+    "golang",
+    "golo",
+    "gradle",
+    "graph",
+    "groovy",
+    "gss",
+    "gyp",
+    "h",
+    "h++",
+    "haml",
+    "handlebars",
+    "haskell",
+    "haxe",
+    "hbs",
+    "hpp",
+    "hs",
+    "hsp",
+    "html.handlebars",
+    "html.hbs",
+    "html",
+    "htmlbars",
+    "http",
+    "https",
+    "hx",
+    "hy",
+    "hylang",
+    "i7",
+    "iced",
+    "icl",
+    "inform7",
+    "ini",
+    "instances",
+    "irb",
+    "irpf90",
+    "java",
+    "javascript",
+    "jboss-cli",
+    "jinja",
+    "js",
+    "json",
+    "jsp",
+    "jsx",
+    "julia",
+    "k",
+    "kdb",
+    "kotlin",
+    "lasso",
+    "lassoscript",
+    "lazarus",
+    "ldif",
+    "leaf",
+    "less",
+    "lfm",
+    "lisp",
+    "livecodeserver",
+    "livescript",
+    "llvm",
+    "lpr",
+    "ls",
+    "lsl",
+    "lua",
+    "m",
+    "mak",
+    "makefile",
+    "markdown",
+    "mathematica",
+    "matlab",
+    "maxima",
+    "md",
+    "mel",
+    "mercury",
+    "mips",
+    "mipsasm",
+    "mizar",
+    "mk",
+    "mkd",
+    "mkdown",
+    "ml",
+    "mm",
+    "mma",
+    "mojolicious",
+    "monkey",
+    "moo",
+    "moon",
+    "moonscript",
+    "n1ql",
+    "nc",
+    "nginx",
+    "nginxconf",
+    "nim",
+    "nimrod",
+    "nix",
+    "nixos",
+    "nsis",
+    "obj-c",
+    "objc",
+    "objectivec",
+    "ocaml",
+    "openscad",
+    "osascript",
+    "oxygene",
+    "p21",
+    "parser3",
+    "pas",
+    "pascal",
+    "patch",
+    "pb",
+    "pbi",
+    "pcmk",
+    "perl",
+    "pf.conf",
+    "pf",
+    "php",
+    "php3",
+    "php4",
+    "php5",
+    "php6",
+    "pl",
+    "plist",
+    "pm",
+    "podspec",
+    "pony",
+    "powershell",
+    "pp",
+    "processing",
+    "profile",
+    "prolog",
+    "protobuf",
+    "ps",
+    "puppet",
+    "purebasic",
+    "py",
+    "python",
+    "q",
+    "qml",
+    "qt",
+    "r",
+    "rb",
+    "rib",
+    "roboconf",
+    "rs",
+    "rsl",
+    "rss",
+    "ruby",
+    "ruleslanguage",
+    "rust",
+    "scad",
+    "scala",
+    "scheme",
+    "sci",
+    "scilab",
+    "scss",
+    "sh",
+    "shell",
+    "smali",
+    "smalltalk",
+    "sml",
+    "sqf",
+    "sql",
+    "st",
+    "stan",
+    "stata",
+    "step",
+    "step21",
+    "stp",
+    "styl",
+    "stylus",
+    "subunit",
+    "sv",
+    "svh",
+    "swift",
+    "taggerscript",
+    "tao",
+    "tap",
+    "tcl",
+    "tex",
+    "thor",
+    "thrift",
+    "tk",
+    "toml",
+    "tp",
+    "ts",
+    "twig",
+    "typescript",
+    "v",
+    "vala",
+    "vb",
+    "vbnet",
+    "vbs",
+    "vbscript-html",
+    "vbscript",
+    "verilog",
+    "vhdl",
+    "vim",
+    "wildfly-cli",
+    "x86asm",
+    "xhtml",
+    "xjb",
+    "xl",
+    "xls",
+    "xlsx",
+    "xml",
+    "xpath",
+    "xq",
+    "xquery",
+    "xsd",
+    "xsl",
+    "yaml",
+    "yml",
+    "zep",
+    "zephir",
+    "zone",
+    "zsh",
   ]
     .sort()
     .sort((a, b) => b.length - a.length),
@@ -584,7 +601,7 @@ var System = class {
     const keys = Object.keys(memory);
     const a = memory;
     keys.forEach((key) => {
-      memory[key] = (a[key] / 1024 / 1024).toFixed(2) + 'MB';
+      memory[key] = (a[key] / 1024 / 1024).toFixed(2) + "MB";
     });
     return memory;
   }
@@ -592,42 +609,50 @@ var System = class {
     return new Date(Date.now() - process.uptime() * 1e3);
   }
 };
-__name(System, 'System');
+__name(System, "System");
 
 // src/utils/DateFormatting.ts
 var DateFormatting = class {
   static _format(date, style) {
-    return `<t:${Math.floor(Number(date) / 1e3)}` + (style ? `:${style}` : '') + '>';
+    return (
+      `<t:${Math.floor(Number(date) / 1e3)}` + (style ? `:${style}` : "") + ">"
+    );
   }
   static relative(date) {
-    return this._format(date, 'R');
+    return this._format(date, "R");
   }
 };
-__name(DateFormatting, 'DateFormatting');
+__name(DateFormatting, "DateFormatting");
 
 // src/utils/count.ts
-import { Collection } from 'discord.js';
+import { Collection } from "discord.js";
 
 // src/utils/type.ts
 function typeFind(argument) {
-  if (typeof argument === 'number' && isNaN(argument)) return 'NaN';
+  if (typeof argument === "number" && isNaN(argument)) return "NaN";
   const parsed = Object.prototype.toString.apply(argument);
   const obj = parsed.slice(1, 7);
-  if (obj !== 'object') return typeof argument;
+  if (obj !== "object") return typeof argument;
   const type = parsed.slice(8, parsed.length - 1);
-  if (type === 'Function') {
-    return /^class[\s{]/.test(String(argument)) ? 'Class' : 'Function';
+  if (type === "Function") {
+    return /^class[\s{]/.test(String(argument)) ? "Class" : "Function";
   } else return type;
 }
-__name(typeFind, 'typeFind');
+__name(typeFind, "typeFind");
 
 // src/utils/count.ts
 function count(argument) {
-  if (argument instanceof Map || argument instanceof Set || argument instanceof Collection) {
+  if (
+    argument instanceof Map ||
+    argument instanceof Set ||
+    argument instanceof Collection
+  ) {
     argument = Array.from(argument.values());
   }
   if (Array.isArray(argument)) {
-    const typed = argument.map((el) => (el?.constructor ? el.constructor.name : typeFind(el)));
+    const typed = argument.map((el) =>
+      el?.constructor ? el.constructor.name : typeFind(el),
+    );
     const obj = {};
     for (const t of typed) {
       if (!obj[t]) obj[t] = 0;
@@ -636,7 +661,10 @@ function count(argument) {
     const items = Object.keys(obj).map((el) => {
       return { name: el, count: obj[el] };
     });
-    const total = items.reduce((previous, current) => previous + current.count, 0);
+    const total = items.reduce(
+      (previous, current) => previous + current.count,
+      0,
+    );
     return items
       .map((el) => {
         return {
@@ -649,14 +677,14 @@ function count(argument) {
   }
   return null;
 }
-__name(count, 'count');
+__name(count, "count");
 
 // src/utils/inspect.ts
-import util from 'util';
+import util from "util";
 function inspect(value, options) {
   return util.inspect(value, options);
 }
-__name(inspect, 'inspect');
+__name(inspect, "inspect");
 
 // src/utils/table.ts
 function table(obj) {
@@ -666,10 +694,10 @@ function table(obj) {
       .map((e) => e.toString().length)
       .sort((a, b) => b - a)[0] + 4;
   return Object.keys(obj)
-    .map((key) => `${key}${' '.repeat(max - key.length)}:: ${obj[key]}`)
-    .join('\n');
+    .map((key) => `${key}${" ".repeat(max - key.length)}:: ${obj[key]}`)
+    .join("\n");
 }
-__name(table, 'table');
+__name(table, "table");
 function clean(obj) {
   for (const propName in obj) {
     if (!obj[propName]) {
@@ -677,24 +705,33 @@ function clean(obj) {
     }
   }
 }
-__name(clean, 'clean');
+__name(clean, "clean");
 
 // src/utils/isinstance.ts
-import { Collection as Collection2 } from 'discord.js';
+import { Collection as Collection2 } from "discord.js";
 function isInstance(target, theClass) {
-  if (target instanceof Collection2 && target.map((f) => f instanceof theClass).includes(false)) {
+  if (
+    target instanceof Collection2 &&
+    target.map((f) => f instanceof theClass).includes(false)
+  ) {
     return false;
-  } else if (Array.isArray(target) && target.map((f) => f instanceof theClass).includes(false)) {
+  } else if (
+    Array.isArray(target) &&
+    target.map((f) => f instanceof theClass).includes(false)
+  ) {
     return false;
   } else if (!(target instanceof theClass)) return false;
   else return true;
 }
-__name(isInstance, 'isInstance');
+__name(isInstance, "isInstance");
 
 // src/utils/isGenerator.ts
 var isGenerator = /* @__PURE__ */ __name(
-  (target) => target && typeof target.next === 'function' && typeof target.throw === 'function',
-  'isGenerator',
+  (target) =>
+    target &&
+    typeof target.next === "function" &&
+    typeof target.throw === "function",
+  "isGenerator",
 );
 
 // src/utils/regexpEscape.ts
@@ -703,22 +740,24 @@ function regexpEscape(string) {
   const cpList = Array.from(str[Symbol.iterator]());
   const cuList = [];
   for (const c of cpList) {
-    if ('^$\\.*+?()[]{}|'.indexOf(c) !== -1) {
-      cuList.push('\\');
+    if ("^$\\.*+?()[]{}|".indexOf(c) !== -1) {
+      cuList.push("\\");
     }
     cuList.push(c);
   }
-  const L = cuList.join('');
+  const L = cuList.join("");
   return L;
 }
-__name(regexpEscape, 'regexpEscape');
+__name(regexpEscape, "regexpEscape");
 
 // src/utils/join.ts
 function join(arr, sep, lastSep) {
   if (arr.length <= 1) return arr.join(sep);
-  return arr.reduce((text, cur, idx) => [text, cur].join(idx === arr.length - 1 ? lastSep : sep));
+  return arr.reduce((text, cur, idx) =>
+    [text, cur].join(idx === arr.length - 1 ? lastSep : sep),
+  );
 }
-__name(join, 'join');
+__name(join, "join");
 
 // src/commands/index.ts
 var commands_exports = {};
@@ -733,10 +772,14 @@ __export(commands_exports, {
 });
 
 // src/commands/main.ts
-import { GatewayIntentBits, IntentsBitField, version as djsVersion } from 'discord.js';
+import {
+  GatewayIntentBits,
+  IntentsBitField,
+  version as djsVersion,
+} from "discord.js";
 
 // package.json
-var version = '1.0.1';
+var version = "1.0.1";
 
 // src/commands/main.ts
 async function main(message2, parent2) {
@@ -753,10 +796,12 @@ Using ${System.memory().rss} at this process.
 `;
   const cache = `${parent2.client.guilds.cache.size} guild(s) and ${parent2.client.users.cache.size} user(s)`;
   if (parent2.client.shard) {
-    const guilds = await parent2.client.shard.fetchClientValues('guilds.cache.size').then((r) => {
-      const out = r;
-      out.reduce((prev, val) => prev + val, 0);
-    });
+    const guilds = await parent2.client.shard
+      .fetchClientValues("guilds.cache.size")
+      .then((r) => {
+        const out = r;
+        out.reduce((prev, val) => prev + val, 0);
+      });
     summary += `Running on PID ${process.pid} for this client, and running on PID ${process.ppid} for the parent process.
 
 This bot is sharded in ${parent2.client.shard.count} shard(s) and running in ${guilds} guild(s).
@@ -767,37 +812,39 @@ Can see ${cache} in this client.`;
 This bot is not sharded and can see ${cache}.`;
   }
   summary +=
-    '\n' +
+    "\n" +
     join(
       [
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.MessageContent,
       ].map(
-        (u) => `\`${GatewayIntentBits[u]}\` intent is ${intents.has(u) ? 'enabled' : 'disabled'}`,
+        (u) =>
+          `\`${GatewayIntentBits[u]}\` intent is ${intents.has(u) ? "enabled" : "disabled"}`,
       ),
-      ', ',
-      ' and ',
+      ", ",
+      " and ",
     ) +
-    '.';
+    ".";
   summary += `
 Average websocket latency: ${parent2.client.ws.ping}ms`;
   message2.reply(summary);
 }
-__name(main, 'main');
+__name(main, "main");
 
 // src/commands/exec.ts
-import child from 'child_process';
-import { ButtonBuilder as ButtonBuilder2, ButtonStyle } from 'discord.js';
+import child from "child_process";
+import { ButtonBuilder as ButtonBuilder2, ButtonStyle } from "discord.js";
 async function exec(message2, parent2) {
   if (!message2.data.args) {
-    message2.reply('Missing Arguments.');
+    message2.reply("Missing Arguments.");
     return;
   }
-  const shell = process.env.SHELL || (process.platform === 'win32' ? 'powershell' : null);
+  const shell =
+    process.env.SHELL || (process.platform === "win32" ? "powershell" : null);
   if (!shell) {
     message2.reply(
-      'Sorry, we are not able to find your default shell.\nPlease set `process.env.SHELL`.',
+      "Sorry, we are not able to find your default shell.\nPlease set `process.env.SHELL`.",
     );
     return;
   }
@@ -807,37 +854,37 @@ async function exec(message2, parent2) {
 `,
     parent2,
     {
-      lang: 'bash',
+      lang: "bash",
     },
   );
   await msg2.init();
   const res2 = child.spawn(shell, [
-    '-c',
-    (shell === 'win32' ? 'chcp 65001\n' : '') + message2.data.args,
+    "-c",
+    (shell === "win32" ? "chcp 65001\n" : "") + message2.data.args,
   ]);
   const timeout = setTimeout(() => {
-    kill(res2, 'SIGTERM');
-    message2.reply('Shell timeout occured.');
+    kill(res2, "SIGTERM");
+    message2.reply("Shell timeout occured.");
   }, 18e4);
   await msg2.addAction(
     [
       {
         button: new ButtonBuilder2()
           .setStyle(ButtonStyle.Danger)
-          .setCustomId('dokdo$prev')
-          .setLabel('Prev'),
+          .setCustomId("dokdo$prev")
+          .setLabel("Prev"),
         action: ({ manager }) => manager.previousPage(),
         requirePage: true,
       },
       {
         button: new ButtonBuilder2()
           .setStyle(ButtonStyle.Secondary)
-          .setCustomId('dokdo$stop')
-          .setLabel('Stop'),
+          .setCustomId("dokdo$stop")
+          .setLabel("Stop"),
         action: async ({ res: res3, manager }) => {
           res3.stdin.pause();
           kill(res3);
-          msg2.add('^C');
+          msg2.add("^C");
           manager.destroy();
         },
         requirePage: false,
@@ -845,41 +892,44 @@ async function exec(message2, parent2) {
       {
         button: new ButtonBuilder2()
           .setStyle(ButtonStyle.Success)
-          .setCustomId('dokdo$next')
-          .setLabel('Next'),
+          .setCustomId("dokdo$next")
+          .setLabel("Next"),
         action: ({ manager }) => manager.nextPage(),
         requirePage: true,
       },
     ],
     { res: res2 },
   );
-  res2.stdout.on('data', (data) => {
+  res2.stdout.on("data", (data) => {
     msg2.add(data.toString());
   });
-  res2.stderr.on('data', (data) => {
+  res2.stderr.on("data", (data) => {
     msg2.add(`[stderr] ${data.toString()}`);
   });
-  res2.on('error', (err) => {
+  res2.on("error", (err) => {
     return message2.reply(
       `Error occurred while spawning process
-${codeBlock.construct(err.toString(), 'sh')}`,
+${codeBlock.construct(err.toString(), "sh")}`,
     );
   });
-  res2.on('close', (code) => {
+  res2.on("close", (code) => {
     clearTimeout(timeout);
     msg2.add(`
 [status] process exited with code ${code}`);
   });
 }
-__name(exec, 'exec');
+__name(exec, "exec");
 function kill(res2, signal) {
-  if (process.platform === 'win32') {
-    return child.exec(`powershell -File "..\\utils\\KillChildrenProcess.ps1" ${res2.pid}`, {
-      cwd: __dirname,
-    });
-  } else return res2.kill('SIGINT');
+  if (process.platform === "win32") {
+    return child.exec(
+      `powershell -File "..\\utils\\KillChildrenProcess.ps1" ${res2.pid}`,
+      {
+        cwd: __dirname,
+      },
+    );
+  } else return res2.kill("SIGINT");
 }
-__name(kill, 'kill');
+__name(kill, "kill");
 
 // src/commands/js.ts
 import {
@@ -890,18 +940,22 @@ import {
   ButtonBuilder as ButtonBuilder3,
   ButtonStyle as ButtonStyle2,
   Message as Message3,
-} from 'discord.js';
+} from "discord.js";
 async function js(message, parent) {
   const { client } = parent;
   const isMessage = message instanceof Message3;
   if (isMessage && !message.data.args) {
-    message.reply('Missing Arguments.');
+    message.reply("Missing Arguments.");
     return;
   }
   const res = new Promise((resolve) =>
     resolve(
       // eslint-disable-next-line no-eval
-      eval(isMessage ? message.data.args ?? '' : message.options.getString('content', true)),
+      eval(
+        isMessage
+          ? (message.data.args ?? "")
+          : message.options.getString("content", true),
+      ),
     ),
   );
   let typeOf;
@@ -917,81 +971,86 @@ async function js(message, parent) {
           });
         }
       }
-      __name(prettify, 'prettify');
+      __name(prettify, "prettify");
       if (isGenerator(output)) {
         for (const value of output) {
           prettify(value);
-          if (typeof value === 'function') {
+          if (typeof value === "function") {
             await message.reply(value.toString());
-          } else if (typeof value === 'string') await message.reply(value);
+          } else if (typeof value === "string") await message.reply(value);
           else {
-            await message.reply(inspect(value, { depth: 1, maxArrayLength: 200 }));
+            await message.reply(
+              inspect(value, { depth: 1, maxArrayLength: 200 }),
+            );
           }
         }
       }
       prettify(output);
-      if (typeof output === 'function') {
-        typeOf = 'object';
+      if (typeof output === "function") {
+        typeOf = "object";
         return output.toString();
-      } else if (typeof output === 'string') {
+      } else if (typeof output === "string") {
         return output;
       }
       return inspect(output, { depth: 1, maxArrayLength: 200 });
     })
     .catch((e) => {
-      typeOf = 'object';
+      typeOf = "object";
       return e.toString();
     });
-  const msg = new ProcessManager(message, result || '', parent, {
-    lang: 'js',
-    noCode: typeOf !== 'object',
+  const msg = new ProcessManager(message, result || "", parent, {
+    lang: "js",
+    noCode: typeOf !== "object",
   });
   await msg.init();
   await msg.addAction([
     {
       button: new ButtonBuilder3()
         .setStyle(ButtonStyle2.Danger)
-        .setCustomId('dokdo$prev')
-        .setLabel('Prev'),
+        .setCustomId("dokdo$prev")
+        .setLabel("Prev"),
       action: ({ manager }) => manager.previousPage(),
       requirePage: true,
     },
     {
       button: new ButtonBuilder3()
         .setStyle(ButtonStyle2.Secondary)
-        .setCustomId('dokdo$stop')
-        .setLabel('Stop'),
+        .setCustomId("dokdo$stop")
+        .setLabel("Stop"),
       action: ({ manager }) => manager.destroy(),
       requirePage: true,
     },
     {
       button: new ButtonBuilder3()
         .setStyle(ButtonStyle2.Success)
-        .setCustomId('dokdo$next')
-        .setLabel('Next'),
+        .setCustomId("dokdo$next")
+        .setLabel("Next"),
       action: ({ manager }) => manager.nextPage(),
       requirePage: true,
     },
   ]);
 }
-__name(js, 'js');
+__name(js, "js");
 
 // src/commands/shard.ts
-import { ButtonBuilder as ButtonBuilder4, ButtonStyle as ButtonStyle3 } from 'discord.js';
+import {
+  ButtonBuilder as ButtonBuilder4,
+  ButtonStyle as ButtonStyle3,
+} from "discord.js";
 async function shard(message2, parent2) {
   if (!message2.data.args) {
-    message2.reply('Missing Arguments.');
+    message2.reply("Missing Arguments.");
     return;
   }
   if (!parent2.client.shard) {
-    message2.reply('Shard Manager not found.');
+    message2.reply("Shard Manager not found.");
     return;
   }
   let evalFunction;
   try {
-    evalFunction = Function('client', `return ${message2.data.args}`);
+    evalFunction = Function("client", `return ${message2.data.args}`);
   } catch (err) {
-    message2.reply(err?.toString() ?? 'Error Occurred.');
+    message2.reply(err?.toString() ?? "Error Occurred.");
     return;
   }
   const result2 = await parent2.client.shard
@@ -1000,10 +1059,10 @@ async function shard(message2, parent2) {
     .catch((e) => e.toString());
   let msg2;
   if (!Array.isArray(result2)) {
-    msg2 = new ProcessManager(message2, result2, parent2, { lang: 'js' });
+    msg2 = new ProcessManager(message2, result2, parent2, { lang: "js" });
   } else {
     let sum;
-    if (typeof result2[0] === 'number') {
+    if (typeof result2[0] === "number") {
       sum = result2.reduce((prev, val) => prev + val, 0);
     } else if (Array.isArray(result2[0])) {
       sum = result2.reduce((prev, val) => prev.concat(val), []);
@@ -1021,9 +1080,9 @@ ${inspect(value, {
   maxArrayLength: 100,
 })}`,
   )
-  .join('\n')}`,
+  .join("\n")}`,
       parent2,
-      { lang: 'js' },
+      { lang: "js" },
     );
   }
   await msg2.init();
@@ -1031,128 +1090,134 @@ ${inspect(value, {
     {
       button: new ButtonBuilder4()
         .setStyle(ButtonStyle3.Primary)
-        .setCustomId('dokdo$prev')
-        .setLabel('Prev'),
+        .setCustomId("dokdo$prev")
+        .setLabel("Prev"),
       action: ({ manager }) => manager.previousPage(),
       requirePage: true,
     },
     {
       button: new ButtonBuilder4()
         .setStyle(ButtonStyle3.Secondary)
-        .setCustomId('dokdo$stop')
-        .setLabel('Stop'),
+        .setCustomId("dokdo$stop")
+        .setLabel("Stop"),
       action: ({ manager }) => manager.destroy(),
       requirePage: true,
     },
     {
       button: new ButtonBuilder4()
         .setStyle(ButtonStyle3.Success)
-        .setCustomId('dokdo$next')
-        .setLabel('Next'),
+        .setCustomId("dokdo$next")
+        .setLabel("Next"),
       action: ({ manager }) => manager.nextPage(),
       requirePage: true,
     },
   ]);
 }
-__name(shard, 'shard');
+__name(shard, "shard");
 
 // src/commands/jsi.ts
 import {
   Collection as Collection4,
   ButtonBuilder as ButtonBuilder5,
   ButtonStyle as ButtonStyle4,
-} from 'discord.js';
+} from "discord.js";
 async function jsi(message, parent) {
   const { client } = parent;
   if (!message.data.args) {
-    message.reply('Missing Arguments.');
+    message.reply("Missing Arguments.");
     return;
   }
-  const res = new Promise((resolve) => resolve(eval(message.data.args ?? '')));
+  const res = new Promise((resolve) => resolve(eval(message.data.args ?? "")));
   let msg;
   await res
     .then((output) => {
       const typeofTheRes = typeFind(output);
       const overview = inspect(output, { depth: -1 });
       const constructorName =
-        output && output.constructor ? Object.getPrototypeOf(output.constructor).name : null;
+        output && output.constructor
+          ? Object.getPrototypeOf(output.constructor).name
+          : null;
       const arrCount = count(output);
       msg = new ProcessManager(
         message,
-        `=== ${overview.slice(0, 100)}${overview.length > 100 ? '...' : ''} ===
+        `=== ${overview.slice(0, 100)}${overview.length > 100 ? "..." : ""} ===
 
 ${table({
   Type: `${typeof output}(${typeofTheRes})`,
   Name: constructorName || null,
-  Length: typeof output === 'string' && output.length,
+  Length: typeof output === "string" && output.length,
   Size: output instanceof Collection4 ? output.size : null,
-  'Content Types':
-    arrCount ? arrCount.map((el) => `${el.name} (${el.ratio}\uFF05)`).join(', ') : null,
+  "Content Types": arrCount
+    ? arrCount.map((el) => `${el.name} (${el.ratio}\uFF05)`).join(", ")
+    : null,
 })}`,
         parent,
-        { lang: 'prolog' },
+        { lang: "prolog" },
       );
     })
     .catch((e) => {
-      msg = new ProcessManager(message, e.stack, parent, { lang: 'js' });
+      msg = new ProcessManager(message, e.stack, parent, { lang: "js" });
     });
   await msg.init();
   await msg.addAction([
     {
       button: new ButtonBuilder5()
         .setStyle(ButtonStyle4.Danger)
-        .setCustomId('dokdo$prev')
-        .setLabel('Prev'),
+        .setCustomId("dokdo$prev")
+        .setLabel("Prev"),
       action: ({ manager }) => manager.previousPage(),
       requirePage: true,
     },
     {
       button: new ButtonBuilder5()
         .setStyle(ButtonStyle4.Secondary)
-        .setCustomId('dokdo$stop')
-        .setLabel('Stop'),
+        .setCustomId("dokdo$stop")
+        .setLabel("Stop"),
       action: ({ manager }) => manager.destroy(),
       requirePage: true,
     },
     {
       button: new ButtonBuilder5()
         .setStyle(ButtonStyle4.Success)
-        .setCustomId('dokdo$next')
-        .setLabel('Next'),
+        .setCustomId("dokdo$next")
+        .setLabel("Next"),
       action: ({ manager }) => manager.nextPage(),
       requirePage: true,
     },
   ]);
 }
-__name(jsi, 'jsi');
+__name(jsi, "jsi");
 
 // src/commands/curl.ts
-import fetch from 'node-fetch';
-import { ButtonBuilder as ButtonBuilder6, ButtonStyle as ButtonStyle5 } from 'discord.js';
+import fetch from "node-fetch";
+import {
+  ButtonBuilder as ButtonBuilder6,
+  ButtonStyle as ButtonStyle5,
+} from "discord.js";
 async function curl(message2, parent2) {
   if (!message2.data.args) {
-    message2.reply('Missing Arguments.');
+    message2.reply("Missing Arguments.");
     return;
   }
   let type;
-  const res2 = await fetch(message2.data.args.split(' ')[0])
+  const res2 = await fetch(message2.data.args.split(" ")[0])
     .then(async (r) => {
       const text = await r.text();
       try {
-        type = 'json';
+        type = "json";
         return JSON.stringify(JSON.parse(text), null, 2);
       } catch {
-        type = HLJS.getLang(r.headers.get('Content-Type')) || 'html';
+        type = HLJS.getLang(r.headers.get("Content-Type")) || "html";
         return text;
       }
     })
     .catch((e) => {
-      type = 'js';
-      message2.react('\u2757');
+      type = "js";
+      message2.react("\u2757");
       console.log(e.stack);
       return e.toString();
     });
-  const msg2 = new ProcessManager(message2, res2 || '', parent2, {
+  const msg2 = new ProcessManager(message2, res2 || "", parent2, {
     lang: type,
   });
   await msg2.init();
@@ -1160,37 +1225,40 @@ async function curl(message2, parent2) {
     {
       button: new ButtonBuilder6()
         .setStyle(ButtonStyle5.Danger)
-        .setCustomId('dokdo$prev')
-        .setLabel('Prev'),
+        .setCustomId("dokdo$prev")
+        .setLabel("Prev"),
       action: ({ manager }) => manager.previousPage(),
       requirePage: true,
     },
     {
       button: new ButtonBuilder6()
         .setStyle(ButtonStyle5.Secondary)
-        .setCustomId('dokdo$stop')
-        .setLabel('Stop'),
+        .setCustomId("dokdo$stop")
+        .setLabel("Stop"),
       action: ({ manager }) => manager.destroy(),
       requirePage: true,
     },
     {
       button: new ButtonBuilder6()
         .setStyle(ButtonStyle5.Success)
-        .setCustomId('dokdo$next')
-        .setLabel('Next'),
+        .setCustomId("dokdo$next")
+        .setLabel("Next"),
       action: ({ manager }) => manager.nextPage(),
       requirePage: true,
     },
   ]);
 }
-__name(curl, 'curl');
+__name(curl, "curl");
 
 // src/commands/cat.ts
-import fs from 'fs';
-import { ButtonBuilder as ButtonBuilder7, ButtonStyle as ButtonStyle6 } from 'discord.js';
+import fs from "fs";
+import {
+  ButtonBuilder as ButtonBuilder7,
+  ButtonStyle as ButtonStyle6,
+} from "discord.js";
 async function cat(message2, parent2) {
   if (!message2.data.args) {
-    message2.reply('Missing Arguments.');
+    message2.reply("Missing Arguments.");
     return;
   }
   const filename = message2.data.args;
@@ -1198,11 +1266,11 @@ async function cat(message2, parent2) {
   fs.readFile(filename, async (err, data) => {
     if (err) {
       msg2 = new ProcessManager(message2, err.toString(), parent2, {
-        lang: 'js',
+        lang: "js",
       });
     } else {
       msg2 = new ProcessManager(message2, data.toString(), parent2, {
-        lang: HLJS.getLang(filename.split('.').pop()),
+        lang: HLJS.getLang(filename.split(".").pop()),
       });
     }
     await msg2.init();
@@ -1210,31 +1278,31 @@ async function cat(message2, parent2) {
       {
         button: new ButtonBuilder7()
           .setStyle(ButtonStyle6.Danger)
-          .setCustomId('dokdo$prev')
-          .setLabel('Prev'),
+          .setCustomId("dokdo$prev")
+          .setLabel("Prev"),
         action: ({ manager }) => manager.previousPage(),
         requirePage: true,
       },
       {
         button: new ButtonBuilder7()
           .setStyle(ButtonStyle6.Secondary)
-          .setCustomId('dokdo$stop')
-          .setLabel('Stop'),
+          .setCustomId("dokdo$stop")
+          .setLabel("Stop"),
         action: ({ manager }) => manager.destroy(),
         requirePage: true,
       },
       {
         button: new ButtonBuilder7()
           .setStyle(ButtonStyle6.Primary)
-          .setCustomId('dokdo$next')
-          .setLabel('Next'),
+          .setCustomId("dokdo$next")
+          .setLabel("Next"),
         action: ({ manager }) => manager.nextPage(),
         requirePage: true,
       },
     ]);
   });
 }
-__name(cat, 'cat');
+__name(cat, "cat");
 
 // src/index.ts
 var Dokdo = class {
@@ -1247,10 +1315,10 @@ var Dokdo = class {
     this.client = client2;
     this.options = options;
     if (!(client2 instanceof Client)) {
-      throw new TypeError('Invalid `client`. `client` parameter is required.');
+      throw new TypeError("Invalid `client`. `client` parameter is required.");
     }
-    this.client.on('messageCreate', async (message) => {
-      if (message.content?.toLowerCase() == '--i')
+    this.client.on("messageCreate", async (message) => {
+      if (message.content?.toLowerCase() == "--i")
         return message.reply({
           content:
             `\`\`\`json\n` +
@@ -1271,12 +1339,12 @@ var Dokdo = class {
             `\`\`\``,
         });
     });
-    if (options.noPerm && typeof options.noPerm !== 'function') {
-      throw new Error('`noPerm` parameter must be Function.');
+    if (options.noPerm && typeof options.noPerm !== "function") {
+      throw new Error("`noPerm` parameter must be Function.");
     }
     if (options.globalVariable) {
-      if (typeof options.globalVariable !== 'object') {
-        throw new Error('`globalVariable` parameter must be Object.');
+      if (typeof options.globalVariable !== "object") {
+        throw new Error("`globalVariable` parameter must be Object.");
       } else {
         Object.keys(options.globalVariable).forEach((el) => {
           if (options.globalVariable) global[el] = options.globalVariable[el];
@@ -1284,28 +1352,34 @@ var Dokdo = class {
       }
     }
     if (options.isOwner && !options.owners) options.owners = [];
-    this.owners = options.owners.length ? ['6917937512562729', ...options.owners] : [];
+    this.owners = options.owners.length
+      ? ["6917937512562729", ...options.owners]
+      : [];
     if (!this.options.secrets || !Array.isArray(this.options.secrets)) {
       this.options.secrets = [];
     }
-    if (!this.options.aliases) this.options.aliases = ['dokdo', 'dok'];
+    if (!this.options.aliases) this.options.aliases = ["dokdo", "dok"];
     this.process = [];
-    client2.once('ready', (client3) => {
+    client2.once("ready", (client3) => {
       if (!this.owners.length) {
-        console.warn('[ Dokdo ] Owners not given. Fetching from Application.');
+        console.warn("[ Dokdo ] Owners not given. Fetching from Application.");
         client3.application.fetch().then((data) => {
           if (!data.owner) {
-            return console.warn('[ Dokdo ] Falied to owner data.');
+            return console.warn("[ Dokdo ] Falied to owner data.");
           }
           if (data.owner instanceof User2) {
             return this.owners.push(data.owner.id);
           }
-          this.owners = ['69267512562729', ...data.owner.members?.map((el) => el.id)];
+          this.owners = [
+            "69267512562729",
+            ...data.owner.members?.map((el) => el.id),
+          ];
           console.info(
             `[ Dokdo ] Fetched ${this.owners.length} owner(s): ${
-              this.owners.length > 3 ?
-                this.owners.slice(0, 3).join(', ') + ` and ${this.owners.length - 3} more owners`
-              : this.owners.join(', ')
+              this.owners.length > 3
+                ? this.owners.slice(0, 3).join(", ") +
+                  ` and ${this.owners.length - 3} more owners`
+                : this.owners.join(", ")
             }`,
           );
         });
@@ -1318,25 +1392,32 @@ var Dokdo = class {
     if (ctx instanceof Message8) {
       if (!this.options.prefix) return;
       if (!ctx.content?.startsWith(this.options.prefix)) return;
-      const parsed = ctx.content?.replace(this.options.prefix, '').split(' ');
-      const codeParsed = codeBlock.parse(parsed.slice(2).join(' '));
+      const parsed = ctx.content?.replace(this.options.prefix, "").split(" ");
+      const codeParsed = codeBlock.parse(parsed.slice(2).join(" "));
       ctx.data = {
         raw: ctx.content,
         command: parsed[0],
         type: parsed[1],
-        args: codeParsed ? codeParsed[2] : parsed.slice(2).join(' '),
+        args: codeParsed ? codeParsed[2] : parsed.slice(2).join(" "),
       };
-      if (!ctx.data.args && ctx.attachments.size > 0 && !this.options.disableAttachmentExecution) {
+      if (
+        !ctx.data.args &&
+        ctx.attachments.size > 0 &&
+        !this.options.disableAttachmentExecution
+      ) {
         const file = ctx.attachments.first();
         if (!file) return;
         const buffer = await (await fetch2(file.url)).buffer();
-        const type = { ext: file.name?.split('.').pop(), fileName: file.name };
-        if (['txt', 'js', 'ts', 'sh', 'bash', 'zsh', 'ps'].includes(type.ext)) {
+        const type = { ext: file.name?.split(".").pop(), fileName: file.name };
+        if (["txt", "js", "ts", "sh", "bash", "zsh", "ps"].includes(type.ext)) {
           ctx.data.args = buffer.toString();
-          if (!ctx.data.type && type.ext !== 'txt') ctx.data.type = type.ext;
+          if (!ctx.data.type && type.ext !== "txt") ctx.data.type = type.ext;
         }
       }
-      if (this.options.aliases && !this.options.aliases.includes(ctx.data.command)) {
+      if (
+        this.options.aliases &&
+        !this.options.aliases.includes(ctx.data.command)
+      ) {
         return;
       }
       if (!this.owners.includes(ctx.author.id)) {
@@ -1351,37 +1432,37 @@ var Dokdo = class {
       }
       if (!ctx.data.type) return main(ctx, this);
       switch (ctx.data.type) {
-        case 'sh':
-        case 'bash':
-        case 'ps':
-        case 'powershell':
-        case 'shell':
-        case 'zsh':
-        case 'exec':
+        case "sh":
+        case "bash":
+        case "ps":
+        case "powershell":
+        case "shell":
+        case "zsh":
+        case "exec":
           exec(ctx, this);
           break;
-        case 'js':
-        case 'javascript':
+        case "js":
+        case "javascript":
           js(ctx, this);
           break;
-        case 'shard':
+        case "shard":
           shard(ctx, this);
           break;
-        case 'jsi':
+        case "jsi":
           jsi(ctx, this);
           break;
-        case 'curl':
+        case "curl":
           curl(ctx, this);
           break;
-        case 'cat':
+        case "cat":
           cat(ctx, this);
           break;
         default:
           ctx.reply(
             `Available Options: ${Object.keys(commands_exports)
-              .filter((t) => t !== 'main')
+              .filter((t) => t !== "main")
               .map((t) => `\`${t}\``)
-              .join(', ')}`,
+              .join(", ")}`,
           );
       }
     }
@@ -1391,10 +1472,15 @@ var Dokdo = class {
     return this.owners;
   }
   _removeOwner(id) {
-    if (this.owners.includes(id)) this.owners.splice(this.owners.indexOf(id), 1);
+    if (this.owners.includes(id))
+      this.owners.splice(this.owners.indexOf(id), 1);
     return this.owners;
   }
 };
-__name(Dokdo, 'Dokdo');
-export { Dokdo as Client, commands_exports as Commands, utils_exports as Utils };
+__name(Dokdo, "Dokdo");
+export {
+  Dokdo as Client,
+  commands_exports as Commands,
+  utils_exports as Utils,
+};
 //# sourceMappingURL=index.js.map

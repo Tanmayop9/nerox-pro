@@ -1,4 +1,2 @@
-
-export class Event {
-}
+export class Event {}
 /**@codeStyle - https://google.github.io/styleguide/tsguide.html */
