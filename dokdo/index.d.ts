@@ -11,8 +11,8 @@ import {
   Snowflake,
   ChatInputCommandInteraction,
   Client,
-} from 'discord.js';
-import util from 'util';
+} from "discord.js";
+import util from "util";
 
 interface ProcessOptions {
   /**
@@ -53,8 +53,15 @@ declare class ProcessManager {
   message?: Message;
   argument: never[];
   args: any;
-  messageComponentCollector: InteractionCollector<ButtonInteraction> | undefined;
-  constructor(message: Context, content: string, dokdo: Dokdo, options?: ProcessOptions);
+  messageComponentCollector:
+    | InteractionCollector<ButtonInteraction>
+    | undefined;
+  constructor(
+    message: Context,
+    content: string,
+    dokdo: Dokdo,
+    options?: ProcessOptions,
+  );
   init(): Promise<void>;
   addAction(actions: Action[], args?: Record<string, unknown>): Promise<void>;
   createMessageComponentMessage(): Promise<void>;
@@ -110,7 +117,7 @@ declare function inspect(value: unknown, options: util.InspectOptions): string;
 
 declare function table(obj: Record<string, any>): string;
 
-declare function typeFind(argument: any): 'NaN' | 'Class' | 'Function' | string;
+declare function typeFind(argument: any): "NaN" | "Class" | "Function" | string;
 
 declare function isInstance(target: unknown, theClass: any): boolean;
 
@@ -211,7 +218,7 @@ interface MessageData {
   type: string;
   args?: string;
 }
-declare module 'discord.js' {
+declare module "discord.js" {
   interface Message {
     data: MessageData;
   }
@@ -233,4 +240,11 @@ declare class Dokdo {
   _removeOwner(id: Snowflake): Snowflake[];
 }
 
-export { Dokdo as Client, index as Commands, Context, DokdoOptions, MessageData, index$1 as Utils };
+export {
+  Dokdo as Client,
+  index as Commands,
+  Context,
+  DokdoOptions,
+  MessageData,
+  index$1 as Utils,
+};

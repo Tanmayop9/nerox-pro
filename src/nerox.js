@@ -4,8 +4,8 @@
  * @copyright 2024 Nerox - Services
  */
 
-import { loadAntiCrash } from './lib/utils/anticrash.js';
-import { ExtendedClient } from './bot/structures/client.js';
+import { loadAntiCrash } from "./lib/utils/anticrash.js";
+import { ExtendedClient } from "./bot/structures/client.js";
 
 console.clear();
 
