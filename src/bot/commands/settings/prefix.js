@@ -64,7 +64,7 @@ export default class Prefix extends Command {
     }
 
     // Validation: Only alphanumeric and symbols
-    const validRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]+$/;
+    const validRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]+$/;
     if (!validRegex.test(newPrefix)) {
       await ctx.reply({
         embeds: [

@@ -91,7 +91,7 @@ export default class Help extends Command {
           await reply.edit({ embeds: [embed] });
           break;
 
-        case "all":
+        case "all": {
           const allEmbed = client
             .embed()
             .setAuthor({
@@ -110,8 +110,9 @@ export default class Help extends Command {
             );
           await reply.edit({ embeds: [allEmbed] });
           break;
+        }
 
-        default:
+        default: {
           const selectedCommands = allCommands[selected] || [];
           const categoryEmbed = client
             .embed()
@@ -132,6 +133,7 @@ export default class Help extends Command {
 
           await reply.edit({ embeds: [categoryEmbed] });
           break;
+        }
       }
     });
 
