@@ -4,8 +4,13 @@ export default class PlayerButtonClick {
   constructor() {
     this.name = event;
     this.execute = async (client, interaction) => {
-      const button = interaction.customId.split("_")[2];
-      const guildId = interaction.customId.split("_")[1];
+      const parts = interaction.customId.split("_");
+      if (parts.length < 3) {
+        console.error("Invalid customId format:", interaction.customId);
+        return;
+      }
+      const button = parts[2];
+      const guildId = parts[1];
       const botVc = interaction.guild?.members.me?.voice.channel;
       const player = client.getPlayer({ guild: { id: guildId } });
       const memberVc = interaction.member?.voice.channel;

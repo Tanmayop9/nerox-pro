@@ -45,17 +45,33 @@ export default class Clear extends Command {
               ],
             })
             .then(async (reply) => {
-              await player.shoukaku.clearFilters();
-              await client.sleep(3);
-              await reply.edit({
-                embeds: [
-                  client
-                    .embed()
-                    .desc(
-                      `${client.emoji.check} Filters cleared successfully.`,
-                    ),
-                ],
-              });
+              try {
+                await player.shoukaku.clearFilters();
+                await client.sleep(3);
+                await reply.edit({
+                  embeds: [
+                    client
+                      .embed()
+                      .desc(
+                        `${client.emoji.check} Filters cleared successfully.`,
+                      ),
+                  ],
+                });
+              } catch (err) {
+                console.error("Failed to clear filters:", err);
+                await reply.edit({
+                  embeds: [
+                    client
+                      .embed()
+                      .desc(
+                        `${client.emoji.cross} Failed to clear filters. Please try again.`,
+                      ),
+                  ],
+                }).catch(() => {});
+              }
+            })
+            .catch((err) => {
+              console.error("Failed to send filter clear message:", err);
             });
           break;
         default:

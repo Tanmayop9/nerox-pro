@@ -58,8 +58,13 @@ export default class ModManage extends Command {
         const users = await Promise.all(
           keys.map(
             async (user) =>
-              await client.users.fetch(user).catch(async () => {
-                await client.db.botmods.delete(user);
+              await client.users.fetch(user).catch(async (err) => {
+                try {
+                  await client.db.botmods.delete(user);
+                } catch (deleteErr) {
+                  console.error("Failed to delete invalid mod entry:", deleteErr);
+                }
+                return null;
               }),
           ),
         );
