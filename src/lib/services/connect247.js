@@ -26,7 +26,10 @@ export const connect247 = async (client, guildId) => {
     })
     .then(async (message) => {
       await client.sleep(5);
-      await message.delete();
+      await message.delete().catch(() => {}); // Ignore delete errors
+    })
+    .catch((err) => {
+      console.error("Failed to send 247 connection message:", err);
     });
   return true;
 };

@@ -11,7 +11,11 @@ export default class PlayerButtonClick {
       const memberVc = interaction.member?.voice.channel;
       const playEmbedId = player?.data.get("playEmbed")?.id;
       if (!player || interaction.message.id !== playEmbedId) {
-        await interaction.message.delete();
+        try {
+          await interaction.message.delete();
+        } catch (err) {
+          // Ignore errors when deleting message (might be already deleted)
+        }
         return;
       }
       if (memberVc?.id !== botVc?.id) {

@@ -132,10 +132,13 @@ export class Manager {
       });
 
       // track end
-      manager.on(
-        "playerEnd",
-        async (player) => await player.data.get("playEmbed")?.delete(),
-      );
+      manager.on("playerEnd", async (player) => {
+        try {
+          await player.data.get("playEmbed")?.delete();
+        } catch (err) {
+          // Ignore errors when deleting play embed (message might be already deleted)
+        }
+      });
       // queue end
       manager.on("playerEmpty", async (player) =>
         player.data.get("autoplayStatus")

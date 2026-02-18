@@ -55,8 +55,12 @@ export default class Radio extends Command {
           .search(interaction.values[0], {
             requester: ctx.author,
           })
-          .then((res) => res.tracks);
-        if (!tracks[0]) {
+          .then((res) => res.tracks)
+          .catch((err) => {
+            console.error("Failed to search for radio tracks:", err);
+            return [];
+          });
+        if (!tracks || !tracks[0]) {
           await reply.edit({
             embeds: [
               client
@@ -66,8 +70,10 @@ export default class Radio extends Command {
           });
           return;
         }
-        await player.play(tracks[0]);
-        await reply.delete();
+        await player.play(tracks[0]).catch((err) => {
+          console.error("Failed to play radio track:", err);
+        });
+        await reply.delete().catch(() => {});
       });
       collector.on("end", async (collected) => {
         if (collected.size === 0)

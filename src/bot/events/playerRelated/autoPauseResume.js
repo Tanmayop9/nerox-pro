@@ -19,7 +19,10 @@ export default class AutoPauseResume {
             })
             .then(async (message) => {
               await client.sleep(5);
-              await message.delete();
+              await message.delete().catch(() => {}); // Ignore delete errors
+            })
+            .catch((err) => {
+              console.error("Failed to send auto pause/resume alert:", err);
             });
       };
       if (oldState.serverMute && !newState.serverMute) {
