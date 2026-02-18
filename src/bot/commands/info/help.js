@@ -23,6 +23,11 @@ export default class Help extends Command {
       return acc;
     }, {});
 
+    // Sort commands alphabetically within each category
+    Object.keys(allCommands).forEach((category) => {
+      allCommands[category].sort((a, b) => a.name.localeCompare(b.name));
+    });
+
     const categories = client.categories
       .sort((b, a) => b.length - a.length)
       .filter((category) => !["owner", "mod", "debug"].includes(category));
